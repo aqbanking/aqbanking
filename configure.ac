@@ -1288,7 +1288,7 @@ case "$OS_TYPE" in
     windows)
 	# GnuCash compiles with this; maybe we need this, too?
 	#CFLAGS="${CFLAGS} -mms-bitfields"
-	LDFLAGS="${LDFLAGS} -no-undefined -mwindows"
+	LDFLAGS="${LDFLAGS} -mwindows"
     ;;
 esac
 

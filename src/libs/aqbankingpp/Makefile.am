@@ -24,7 +24,7 @@ libaqbankingpp_la_SOURCES=\
 libaqbankingpp_la_LIBADD = \
  $(aqbanking_internal_libs) \
  $(gwenhywfar_libs) $(i18n_libs)
-libaqbankingpp_la_LDFLAGS =
+libaqbankingpp_la_LDFLAGS = -no-undefined
 
 
 sources:
