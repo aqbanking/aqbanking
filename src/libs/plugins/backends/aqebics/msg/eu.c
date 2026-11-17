@@ -44,6 +44,7 @@ EB_EU *EB_Eu_new()
 void EB_Eu_free(EB_EU *eu)
 {
   if (eu) {
+    GWEN_LIST_FINI(EB_EU, eu);
     free(eu->version);
     free(eu->jobType);
     free(eu->signaturePtr);

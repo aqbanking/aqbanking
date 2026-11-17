@@ -47,6 +47,10 @@ void AH_VopResult_free(AH_VOP_RESULT *vr)
 {
   if (vr) {
     GWEN_LIST_FINI(AH_VOP_RESULT, vr);
+    free(vr->localBic);
+    free(vr->remoteIban);
+    free(vr->remoteName);
+    free(vr->altRemoteName);
     GWEN_FREE_OBJECT(vr);
   }
 }

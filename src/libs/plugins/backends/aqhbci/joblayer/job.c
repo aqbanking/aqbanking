@@ -60,6 +60,7 @@ void AH_Job_free(AH_JOB *j)
       free(j->responseName);
       free(j->code);
       free(j->name);
+      free(j->description);
       free(j->dialogId);
       free(j->expectedSigner);
       free(j->expectedCrypter);
