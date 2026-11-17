@@ -219,22 +219,22 @@ int _readFile(const char *fname, GWEN_BUFFER *dbuf)
   if (f) {
     while (!feof(f)) {
       uint32_t l;
-      ssize_t s;
+      size_t s;
       char *p;
 
       GWEN_Buffer_AllocRoom(dbuf, 1024);
       l=GWEN_Buffer_GetMaxUnsegmentedWrite(dbuf);
       p=GWEN_Buffer_GetPosPointer(dbuf);
       s=fread(p, 1, l, f);
-      if (s==0)
-        break;
-      if (s==(ssize_t)-1) {
+      if (ferror(f)) {
         DBG_ERROR(0,
                   "fread(%s): %s",
                   fname, strerror(errno));
         fclose(f);
         return GWEN_ERROR_IO;
       }
+      if (s==0)
+        break;
 
       GWEN_Buffer_IncrementPos(dbuf, s);
       GWEN_Buffer_AdjustUsedBytes(dbuf);
