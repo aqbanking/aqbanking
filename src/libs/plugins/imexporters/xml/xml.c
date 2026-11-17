@@ -25,6 +25,7 @@
 #include <gwenhywfar/gui.h>
 #include <gwenhywfar/inherit.h>
 #include <gwenhywfar/xml2db.h>
+#include <gwenhywfar/text.h>
 
 
 
@@ -770,7 +771,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
   if (s>sStart) {
     char *sCopy;
 
-    sCopy=strndup(sStart, s-sStart);
+    sCopy=GWEN_Text_strndup(sStart, s-sStart);
     assert(sCopy);
     AB_Transaction_SetTransactionKey(t, sCopy);
     free(sCopy);
@@ -787,7 +788,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
     char *sCopy;
     int num=0;
 
-    sCopy=strndup(sStart, s-sStart);
+    sCopy=GWEN_Text_strndup(sStart, s-sStart);
     assert(sCopy);
     if (1!=sscanf(sCopy, "%d", &num)) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Transaction details with invalid code (2nd element) in \"%s\", ignoring", sDetails);
@@ -807,7 +808,7 @@ void handleTransactionDetails(AB_TRANSACTION *t, const char *sDetails)
   if (s>sStart) {
     char *sCopy;
 
-    sCopy=strndup(sStart, s-sStart);
+    sCopy=GWEN_Text_strndup(sStart, s-sStart);
     assert(sCopy);
     AB_Transaction_SetPrimanota(t, sCopy);
     free(sCopy);
