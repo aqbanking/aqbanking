@@ -150,18 +150,17 @@ int _addAccount(GWEN_DIALOG *dlg)
 
         AB_ACCOUNT *account;
 
-        int account_name_len = strlen(owner_name) + 12;
+        GWEN_BUFFER *account_name = GWEN_Buffer_new(0, 64, 0, 1);
 
-        char account_name[account_name_len];
-
-        snprintf(account_name, account_name_len, "GivveCard %s", owner_name);
+        GWEN_Buffer_AppendArgs(account_name, "GivveCard %s", owner_name);
 
         account = AB_Provider_CreateAccountObject(xdlg->provider);
         AB_Provider_AddAccount(xdlg->provider, account, 1);
         AB_Account_SetUserId(account, AB_User_GetUniqueId(xdlg->user));
         AB_Account_SetOwnerName(account, owner_name);
         AB_Account_SetAccountNumber(account, id);
-        AB_Account_SetAccountName(account, account_name);
+        AB_Account_SetAccountName(account, GWEN_Buffer_GetStart(account_name));
+        GWEN_Buffer_free(account_name);
 
         AB_Provider_WriteAccount(xdlg->provider, AB_Account_GetUniqueId(account), 1, 1, account);
       }
