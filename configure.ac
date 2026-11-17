@@ -9,6 +9,15 @@ AC_CONFIG_SRCDIR([README])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 
+dnl MSVC has no <strings.h>; its <string.h> provides the same functions
+dnl under other names.
+AH_BOTTOM([
+#ifdef _MSC_VER
+# define strcasecmp _stricmp
+# define strncasecmp _strnicmp
+#endif
+])
+
 
 ###-------------------------------------------------------------------------
 #

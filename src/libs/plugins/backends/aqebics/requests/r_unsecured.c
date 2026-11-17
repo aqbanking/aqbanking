@@ -9,6 +9,10 @@
 
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include "aqebics/msg/msg.h"
 #include "aqebics/msg/keys.h"
 #include "aqebics/client/user_l.h"

@@ -2,6 +2,10 @@
 
 
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <gwenhywfar/logger.h>
 #include <gwenhywfar/db.h>
 #include <gwenhywfar/debug.h>
