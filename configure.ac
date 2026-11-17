@@ -197,6 +197,16 @@ if test "$aqb_cv_c_msvc" = "yes"; then
   aqb_abs_srcdir=`cd "$srcdir" && pwd`
   CPPFLAGS="$CPPFLAGS -I$aqb_abs_srcdir/compat/msvc"
 fi
+# Import library names on Windows, for the CMake package files
+if test "$aqb_cv_c_msvc" = "yes"; then
+  AQBANKING_IMPLIB_PREFIX=""
+  AQBANKING_IMPLIB_SUFFIX=".dll.lib"
+else
+  AQBANKING_IMPLIB_PREFIX="lib"
+  AQBANKING_IMPLIB_SUFFIX=".dll.a"
+fi
+AC_SUBST(AQBANKING_IMPLIB_PREFIX)
+AC_SUBST(AQBANKING_IMPLIB_SUFFIX)
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_INSTALL
