@@ -514,14 +514,11 @@ AC_MSG_RESULT($XMLMERGE)
 
 # Allow the user to override the gmp_libs detection here
 if test "x$gmp_libs" = "x"; then
-  AC_CHECK_LIB(gmp, __gmpz_init, [have_gmp="yes"], [have_gmp="no"])
-  AC_CHECK_HEADERS(gmp.h, [], [have_gmp="no"])
-  if test "$have_gmp" != "yes"; then
-    AC_MSG_ERROR([GMP is required, see http://swox.com/gmp])
-  else
-    gmp_libs="-lgmp"
-  fi
+  PKG_CHECK_MODULES([GMP], [gmp])
+  gmp_cflags="$GMP_CFLAGS"
+  gmp_libs="$GMP_LIBS"
 fi
+AC_SUBST(gmp_cflags)
 AC_SUBST(gmp_libs)
 
 

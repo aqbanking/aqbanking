@@ -187,13 +187,10 @@
         <dep id="xslt" name="libxslt" required="TRUE" />
         <dep id="zlib" name="zlib" required="TRUE" />
       </ifVarHasValue>
+
+      <dep id="gmp" name="gmp" required="TRUE" />
       
     </dependencies>
-  
-
-    <checklibs>
-      <lib id="gmp" name="gmp" function="__gmpz_init" />
-    </checklibs>
 
 
     <!-- symbol visibility -->
