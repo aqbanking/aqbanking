@@ -1008,7 +1008,7 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
                                  int nounmount)
 {
   AB_BANKING *ab;
-  const void *p;
+  const uint8_t *p;
   unsigned int l;
   GWEN_BUFFER *bbuf;
   int i;
@@ -1160,15 +1160,15 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   }
 
   bbuf=GWEN_Buffer_new(0, 129, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<128)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 128-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<8; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(0, "Error converting to hex??");
       abort();
     }
@@ -1193,15 +1193,15 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
   }
 
   bbuf=GWEN_Buffer_new(0, 129, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<128)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 128-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<8; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(0, "Error converting to hex??");
       abort();
     }
@@ -1223,11 +1223,11 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error hashing (%d)", rv);
       abort();
     }
-    p=GWEN_Buffer_GetStart(bbuf);
+    p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
     l=GWEN_Buffer_GetUsedBytes(bbuf);
     for (i=0; i<2; i++) {
       GWEN_Buffer_AppendString(lbuf, "  ");
-      if (GWEN_Text_ToHexBuffer(p, 10, lbuf, 2, ' ', 0)) {
+      if (GWEN_Text_ToHexBuffer((const char *)p, 10, lbuf, 2, ' ', 0)) {
         DBG_ERROR(0, "Error converting to hex??");
         abort();
       }
@@ -1241,11 +1241,11 @@ int EBC_Provider_GetIniLetterTxt(AB_PROVIDER *pro,
       DBG_ERROR(AQEBICS_LOGDOMAIN, "Error hashing (%d)", rv);
       abort();
     }
-    p=GWEN_Buffer_GetStart(bbuf);
+    p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
     l=GWEN_Buffer_GetUsedBytes(bbuf);
     for (i=0; i<2; i++) {
       GWEN_Buffer_AppendString(lbuf, "  ");
-      if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+      if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
         DBG_ERROR(0, "Error converting to hex??");
         abort();
       }

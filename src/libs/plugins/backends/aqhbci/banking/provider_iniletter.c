@@ -145,7 +145,7 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
 {
   AB_BANKING *ab;
   AH_HBCI *h;
-  const void *p;
+  const uint8_t *p;
   unsigned int l;
   GWEN_BUFFER *bbuf;
   GWEN_BUFFER *keybuf;
@@ -339,15 +339,15 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
   }
 
   bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<96)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -375,15 +375,15 @@ int _getIniLetterTxt1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
   }
 
   bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<96)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -438,7 +438,7 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 {
   AB_BANKING *ab;
   AH_HBCI *h;
-  const void *p;
+  const uint8_t *p;
   unsigned int l;
   GWEN_BUFFER *bbuf;
   GWEN_BUFFER *keybuf;
@@ -642,15 +642,15 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
   bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<96)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -680,15 +680,15 @@ int _getIniLetterHtml1(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
   bbuf=GWEN_Buffer_new(0, 97, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<96)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, 96-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<6; i++) {
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, 16, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, 16, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -751,7 +751,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
 {
   AB_BANKING *ab;
   AH_HBCI *h;
-  const void *p;
+  const uint8_t *p;
   unsigned int l;
   unsigned int modLen;
   GWEN_BUFFER *bbuf;
@@ -952,11 +952,11 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
   }
 
   bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<modLen)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, modLen-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<modLen; i+=16) {
     int rl=modLen-i;
@@ -964,7 +964,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
       rl=16;
 
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, rl, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -991,9 +991,9 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
   }
 
   bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<modLen; i+=16) {
     int rl=modLen-i;
@@ -1001,7 +1001,7 @@ int _getIniLetterTxt2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER 
       rl=16;
 
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, rl, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -1084,7 +1084,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 {
   AB_BANKING *ab;
   AH_HBCI *h;
-  const void *p;
+  const uint8_t *p;
   unsigned int l;
   GWEN_BUFFER *bbuf;
   GWEN_BUFFER *keybuf;
@@ -1296,11 +1296,11 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
   bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
   if (l<modLen)
     GWEN_Buffer_FillLeftWithBytes(bbuf, 0, modLen-l);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<modLen; i+=16) {
     int rl=modLen-i;
@@ -1308,7 +1308,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
       rl=16;
 
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, rl, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
@@ -1337,9 +1337,9 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
 
   GWEN_Buffer_AppendString(lbuf, "<font face=fixed>\n");
   bbuf=GWEN_Buffer_new(0, modLen+1, 0, 1);
-  GWEN_Buffer_AppendBytes(bbuf, p, l);
+  GWEN_Buffer_AppendBytes(bbuf, (const char *)p, l);
   GWEN_Buffer_Rewind(bbuf);
-  p=GWEN_Buffer_GetStart(bbuf);
+  p=(const uint8_t *)GWEN_Buffer_GetStart(bbuf);
   l=GWEN_Buffer_GetUsedBytes(bbuf);
   for (i=0; i<modLen; i+=16) {
     int rl=modLen-i;
@@ -1347,7 +1347,7 @@ int _getIniLetterHtml2(AB_PROVIDER *pro, AB_USER *u, int useBankKey, GWEN_BUFFER
       rl=16;
 
     GWEN_Buffer_AppendString(lbuf, "  ");
-    if (GWEN_Text_ToHexBuffer(p, rl, lbuf, 2, ' ', 0)) {
+    if (GWEN_Text_ToHexBuffer((const char *)p, rl, lbuf, 2, ' ', 0)) {
       DBG_ERROR(AQHBCI_LOGDOMAIN, "Error converting to hex??");
       abort();
     }
