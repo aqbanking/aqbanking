@@ -26,7 +26,7 @@ libaqebics_la_LIBADD=\
   dialogs/libdialogs.la \
   client/libclient.la \
   requests/libaqebics_requests.la \
-  control/libebicscontrol.la -lz $(AQEBICS_LIBS)
+  control/libebicscontrol.la $(AQEBICS_LIBS)
 
 
 sources:
