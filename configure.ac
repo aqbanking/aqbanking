@@ -1283,16 +1283,6 @@ AC_SUBST(all_libraries)
 AC_SUBST(aqbanking_backends)
 
 
-# Adjust CFLAGS and LDFLAGS on Windows
-case "$OS_TYPE" in
-    windows)
-	# GnuCash compiles with this; maybe we need this, too?
-	#CFLAGS="${CFLAGS} -mms-bitfields"
-	LDFLAGS="${LDFLAGS} -mwindows"
-    ;;
-esac
-
-
 
 ###-------------------------------------------------------------------------
 #
