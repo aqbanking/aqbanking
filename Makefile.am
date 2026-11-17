@@ -2,6 +2,8 @@ SUBDIRS=admin doc m4 src po @TUTORIALS@
 DIST_SUBDIRS=admin doc m4 src po tutorials
 
 EXTRA_DIST=AUTHORS COPYING ChangeLog INSTALL NEWS README \
+ compat/msvc/strings.h \
+ compat/msvc/unistd.h \
  aqbanking.spec.in aqbanking.spec \
  aqbanking.iss.in aqbanking.iss \
  Doxyfile.in \

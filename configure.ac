@@ -185,6 +185,18 @@ AC_GNU_SOURCE
 # Checks for programs.
 #
 AC_PROG_CC
+# MSVC lacks some POSIX headers; compat/msvc provides replacements. This
+# must precede the first header checks, which libtool runs, too.
+AC_CACHE_CHECK([whether the C compiler is MSVC], [aqb_cv_c_msvc],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifndef _MSC_VER
+# error not MSVC
+#endif
+]])], [aqb_cv_c_msvc=yes], [aqb_cv_c_msvc=no])])
+if test "$aqb_cv_c_msvc" = "yes"; then
+  aqb_abs_srcdir=`cd "$srcdir" && pwd`
+  CPPFLAGS="$CPPFLAGS -I$aqb_abs_srcdir/compat/msvc"
+fi
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_INSTALL
@@ -210,9 +222,9 @@ AC_CHECK_PROG(ASTYLE, astyle, astyle, echo)
 # Checks for header files.
 #
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h locale.h])
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h locale.h])
 AC_CHECK_HEADERS([iconv.h libintl.h locale.h])
-AC_CHECK_HEADERS([assert.h ctype.h errno.h fcntl.h stdio.h stdlib.h string.h strings.h locale.h])
+AC_CHECK_HEADERS([assert.h ctype.h errno.h fcntl.h stdio.h stdlib.h string.h locale.h])
 
 
 
