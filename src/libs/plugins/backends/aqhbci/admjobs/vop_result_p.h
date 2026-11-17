@@ -15,7 +15,7 @@
 
 
 struct AH_VOP_RESULT {
-  GWEN_LIST_ELEMENT(AH_VOP_RESULT);
+  GWEN_LIST_ELEMENT(AH_VOP_RESULT)
   char *localBic;
   char *remoteIban;
   char *remoteName;

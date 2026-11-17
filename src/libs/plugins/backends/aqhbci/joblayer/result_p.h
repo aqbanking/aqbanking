@@ -17,7 +17,7 @@
 
 
 struct AH_RESULT {
-  GWEN_LIST_ELEMENT(AH_RESULT);
+  GWEN_LIST_ELEMENT(AH_RESULT)
   int code;
   char *text;
   char *ref;

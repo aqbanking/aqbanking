@@ -22,7 +22,7 @@
 
 /** Customer's outbox */
 struct AH_OUTBOX_CBOX {
-  GWEN_LIST_ELEMENT(AH_OUTBOX_CBOX);
+  GWEN_LIST_ELEMENT(AH_OUTBOX_CBOX)
   AH_OUTBOX *outbox;
   AB_PROVIDER *provider;
   AB_USER *user;

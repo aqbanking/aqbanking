@@ -20,7 +20,7 @@
 
 
 struct AH_MSG {
-  GWEN_LIST_ELEMENT(AH_MSG);
+  GWEN_LIST_ELEMENT(AH_MSG)
 
   AH_DIALOG *dialog;
 

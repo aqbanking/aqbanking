@@ -15,14 +15,14 @@
 
 
 struct AHB_SWIFT_TAG {
-  GWEN_LIST_ELEMENT(AHB_SWIFT_TAG);
+  GWEN_LIST_ELEMENT(AHB_SWIFT_TAG)
   char *id;
   char *content;
 };
 
 
 struct AHB_SWIFT_SUBTAG {
-  GWEN_LIST_ELEMENT(AHB_SWIFT_SUBTAG);
+  GWEN_LIST_ELEMENT(AHB_SWIFT_SUBTAG)
   int id;
   char *content;
 };

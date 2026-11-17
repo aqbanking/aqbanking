@@ -21,8 +21,8 @@
 
 
 struct AH_JOB {
-  GWEN_LIST_ELEMENT(AH_JOB);
-  GWEN_INHERIT_ELEMENT(AH_JOB);
+  GWEN_LIST_ELEMENT(AH_JOB)
+  GWEN_INHERIT_ELEMENT(AH_JOB)
 
   char *name;
   char *code;
