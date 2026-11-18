@@ -232,6 +232,7 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   char header[32];
   int headerBytesRead;
   int msgSize;
+  int remainder;
 
   assert(trans);
   xtrans=GWEN_INHERIT_GETDATA(AQFINTS_TRANSPORT, AQFINTS_TRANSPORT_HBCI, trans);
@@ -271,7 +272,7 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   }
 
   /* subtract bytes already received */
-  msgSize-=rv;
+  remainder=msgSize-headerBytesRead;
 
   /* make room for the rest of the message */
   GWEN_Buffer_AllocRoom(buffer, msgSize);
@@ -279,20 +280,18 @@ int transportReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   GWEN_Buffer_AppendBytes(buffer, header, headerBytesRead);
 
   /* receive rest of the message */
-  rv=GWEN_SyncIo_ReadForced(xtrans->ioLayer,
-                            (uint8_t *)GWEN_Buffer_GetPosPointer(buffer),
-                            msgSize);
+  rv=GWEN_SyncIo_ReadForced(xtrans->ioLayer, (uint8_t *)GWEN_Buffer_GetPosPointer(buffer), remainder);
   if (rv<0) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "Error reading message (%d)", rv);
     return rv;
   }
-  else if (rv!=msgSize) {
+  else if (rv!=remainder) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "EOF met");
     return GWEN_ERROR_EOF;
   }
 
   /* advance pointer and counter in buffer */
-  GWEN_Buffer_IncrementPos(buffer, msgSize);
+  GWEN_Buffer_IncrementPos(buffer, remainder);
   GWEN_Buffer_AdjustUsedBytes(buffer);
 
   return 0;

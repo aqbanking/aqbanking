@@ -353,7 +353,7 @@ int readString(AQFINTS_ELEMENT *targetElement, const uint8_t *ptrBuf, uint32_t l
   origLenBuf=lenBuf;
   destBuf=GWEN_Buffer_new(0, 256, 0, 1);
 
-  while (*ptrBuf && lenBuf) {
+  while (lenBuf && *ptrBuf) {
     switch (*ptrBuf) {
     case '\'':
     case '+':
