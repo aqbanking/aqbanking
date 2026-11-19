@@ -139,6 +139,7 @@ void _parseAndProbablyAddDescriptor(const char *sName, const char *family, int v
     else {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Param [%s] does not match family %s.%d", sName, family, version1);
     }
+    AB_SwiftDescr_free(tmpDescr);
   }
   else {
     DBG_INFO(AQHBCI_LOGDOMAIN, "Could not create SWIFT descriptor from string \"%s\", ignoring", sName);
