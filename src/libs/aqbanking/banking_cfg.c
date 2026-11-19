@@ -30,13 +30,6 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname)
 {
   GWEN_BUFFER *buf;
   char home[256];
-
-  if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
-    DBG_ERROR(AQBANKING_LOGDOMAIN,
-              "Could not determine home directory, aborting.");
-    abort();
-  }
-
   buf=GWEN_Buffer_new(0, 256, 0, 1);
 
   if (dname) {
@@ -64,6 +57,11 @@ int AB_Banking__GetConfigManager(AB_BANKING *ab, const char *dname)
     if (s)
       GWEN_Buffer_AppendString(buf, s);
     else {
+      if (GWEN_Directory_GetHomeDirectory(home, sizeof(home))) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN,
+                  "Could not determine HOME directory, aborting.");
+        abort();
+      }
       /* use default */
       GWEN_Buffer_AppendString(buf, home);
       GWEN_Buffer_AppendString(buf, DIRSEP);
