@@ -144,7 +144,7 @@ library is organized in multiple layers:
     the Provider functions which actually implement the online banking
     functionality. ("Provider" is simply another word for "backend".)
     The API has been designed to be as wide open as possible, and currently
-    it is used by plugins for HBCI, OFX Direct Connect, YellowNet,
+    it is used by plugins for HBCI, YellowNet,
     DTAUS and GeldKarte providers.
   </li>
 </ul>

@@ -93,7 +93,7 @@ AB_IMEXPORTER *AB_Banking__CreateImExporterPlugin(AB_BANKING *ab, const char *mo
 #endif
 
 #ifdef AQBANKING_WITH_PLUGIN_IMEXPORTER_OPENHBCI1
-    if (strcasecmp(modname, "ofx")==0)
+    if (strcasecmp(modname, "openhbci1")==0)
       return AB_ImExporterOpenHBCI1_new(ab);
 #endif
 

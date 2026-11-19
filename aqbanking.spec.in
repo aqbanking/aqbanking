@@ -15,10 +15,9 @@
 %define fronts_datadir %{_datadir}/%{name}/frontends
 %define qb_cfgmoddir   %{fronts_libdir}/qbanking/cfgmodules
 
-### Optionally disable chipcard and ofx sub-packages - resulting
+### Optionally disable chipcard sub-packages - resulting
 ### rpms should not be released!
 %define have_libchipcard 0
-%define have_libofx      1
 %define with_yellownet   0
 
 
@@ -27,21 +26,6 @@
 %define release 1.%{disttag}%{distver}
 
 ### Choose backends to be built
-%if %have_libofx
-%if %have_libchipcard
-%if %with_yellownet
-%define backendlist "aqhbci aqofxconnect aqyellownet"
-%else
-%define backendlist "aqhbci aqofxconnect"
-%endif
-%else
-%if %with_yellownet
-%define backendlist "aqhbci aqofxconnect aqyellownet"
-%else
-%define backendlist "aqhbci aqofxconnect"
-%endif
-%endif
-%else
 %if %have_libchipcard
 %if %with_yellownet
 %define backendlist "aqhbci aqyellownet"
@@ -53,7 +37,6 @@
 %define backendlist "aqhbci aqyellownet"
 %else
 %define backendlist "aqhbci"
-%endif
 %endif
 %endif
 
@@ -135,32 +118,6 @@ Requires:   gwenhywfar >= %{_gwenhywfar_version}
 %description qt3
 This package contains the QT3 setup wizard for AqBanking.
 
-### Sub-packages for OFX
-%if %have_libofx
-%package       ofx
-Summary:       Aqbanking tools for Qt3
-Group:         Development/Libraries/C and C++
-Requires:      %{name} = %{version}
-Obsoletes:     %{name}-ofx-qt3
-
-%description ofx
-Aqbanking tools for Qt3. Necessary for OFX direct connect access.
-
-Author: Martin Preuss <martin@libchipcard.de>
-
-%package    ofx-qt3
-Summary:    Aqbanking tools for Qt3
-Group:      Development/Libraries/C and C++
-Requires:   %{name} = %{version}
-Requires:   gwenhywfar >= %{_gwenhywfar_version}
-
-%description ofx-qt3
-Aqbanking tools for Qt3. Necessary for OFX direct connect access.
-
-Author: Martin Preuss <martin@libchipcard.de>
-%endif
-
-
 ### Sub-packages for yellownet
 %if %with_yellownet
 %package       yellownet
@@ -240,6 +197,7 @@ make install-strip \
 %{imex_plugindir}/csv.*
 %{imex_plugindir}/dtaus.*
 %{imex_plugindir}/eri2.*
+%{imex_plugindir}/ofx.*
 %{imex_plugindir}/openhbci1.*
 %{imex_plugindir}/swift.*
 %{imex_plugindir}/xmldb.*
@@ -248,6 +206,7 @@ make install-strip \
 %{imex_datadir}/dtaus
 %{imex_datadir}/eri
 %{imex_datadir}/eri2
+%{imex_datadir}/ofx
 %{imex_datadir}/openhbci1
 %{imex_datadir}/swift
 %{imex_datadir}/xmldb
@@ -296,21 +255,6 @@ make install-strip \
 %{qb_cfgmoddir}/aqhbci*
 %{_datadir}/%{name}/i18n
 %{fronts_datadir}/qbanking
-
-%if %have_libofx
-%files ofx
-%defattr(-,root,root)
-%{_libdir}/libaqofxconnect.so.*
-%{_libdir}/libaqofxconnect.so
-%{_includedir}/aqofxconnect
-%{aq_plugindir}/providers/aqofxconnect.*
-%{imex_plugindir}/ofx.*
-%{imex_datadir}/ofx
-
-%files ofx-qt3
-%defattr(-,root,root)
-%{qb_cfgmoddir}/aqofxconnect*
-%endif
 
 %if %with_yellownet
 %files yellownet

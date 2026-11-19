@@ -61,7 +61,6 @@
     <useTargets>
       aqhbci
       aqnone
-      aqofxconnect
       aqpaypal
       aqebics
       aqfints
@@ -72,7 +71,6 @@
     <subdirs>
       aqhbci
       aqnone
-      aqofxconnect
       aqpaypal
       aqebics
       aqfints

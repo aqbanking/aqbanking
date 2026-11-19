@@ -86,7 +86,7 @@ mp:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="-ggdb -Wall" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqfints aqhbci aqofxconnect aqnone aqpaypal aqebics aqgivve"  \
+	    --with-backends="aqfints aqhbci aqnone aqpaypal aqebics aqgivve"  \
 	    --prefix=/usr/local --enable-full-doc=yes
 	make sources
 
@@ -103,7 +103,7 @@ clang:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="-ggdb -Wall" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect aqebics"
+	    --with-backends="aqhbci aqebics"
 	make sources
 
 mp-priv:
@@ -116,10 +116,8 @@ mp-priv:
 	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" \
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="-ggdb -Wall" \
-          LIBOFX_CFLAGS="-I/opt/devel/4/include" \
-	  LIBOFX_LIBS="-L/opt/devel/4/lib -lofx" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqhbci aqofxconnect"  \
+	    --with-backends="aqhbci"  \
 	    --with-frontends="" \
 	    --with-gwen-dir=/opt/devel/4 \
 	    --with-chipcard-client-dir=/opt/devel/4 \
@@ -134,7 +132,7 @@ mp-orig:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus aqyellownet aqgeldkarte" --with-frontends="" --with-gwen-dir=/opt/devel --with-chipcard-client-dir=/opt/devel
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus aqyellownet aqgeldkarte" --with-frontends="" --with-gwen-dir=/opt/devel --with-chipcard-client-dir=/opt/devel
 	make sources
 
 mp2:
@@ -144,7 +142,7 @@ mp2:
 	if test ! -f i18nsources; then echo > i18nsources; fi
 	automake --add-missing
 	autoconf
-	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqofxconnect aqdtaus" --with-frontends=""
+	PKG_CONFIG_PATH="$PKG_CONFIG_PATH:./m4" CXXFLAGS="-ggdb -Wall" CFLAGS="$(MP_CFLAGS)" ./configure $(MP_CONF_FLAGS) --with-backends="aqhbci aqdtaus" --with-frontends=""
 	make sources
 
 mp-win:
@@ -175,7 +173,7 @@ mp-w32:
 	  --enable-release \
 	  --with-gwen-dir=$(WIN32_INSTALL_DIR) \
 	  --with-frontends="" \
-          --with-backends="aqhbci aqofxconnect"  \
+          --with-backends="aqhbci"  \
 	  --disable-tutorials \
 	  --with-xmlmerge=/usr/bin/xmlmerge
 
@@ -196,7 +194,7 @@ sanitize:
 	  CXXFLAGS="-ggdb -Wall" \
 	  CFLAGS="-ggdb -Wall -fsanitize=undefined -fsanitize=address" \
 	  ./configure $(MP_CONF_FLAGS) \
-	    --with-backends="aqfints aqhbci aqofxconnect aqnone aqpaypal aqebics"  \
+	    --with-backends="aqfints aqhbci aqnone aqpaypal aqebics"  \
 	    --prefix=/usr/local --enable-full-doc=yes
 	make sources
 

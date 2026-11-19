@@ -92,7 +92,7 @@ symlinkFolder () {
 
 # symlink all headers from src/libs/plugins/backends/
 #dirlist='@aqbanking_backends@'  # list might be empty
-dirlist='aqebics aqofxconnect aqpaypal'
+dirlist='aqebics aqpaypal'
 for backend in ${dirlist} ; do
   mkdir -p aqbanking6/${backend}
   if [ -d "src/libs/plugins/backends/${backend}" ] ; then
@@ -112,11 +112,6 @@ for backend in ${dirlist} ; do
   fi
   
 done
-
-if [ -d aqbanking6/aqofxconnect ] ; then
-  ln -s "${bprefix}/src/libs/plugins/backends/aqofxconnect/libofxhome/oh_institute_data.h" aqbanking6/aqofxconnect
-  ln -s "${bprefix}/src/libs/plugins/backends/aqofxconnect/libofxhome/oh_institute_spec.h" aqbanking6/aqofxconnect
-fi
 
 
 rm -f sl-headers 2>/dev/null

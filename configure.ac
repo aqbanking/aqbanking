@@ -238,7 +238,7 @@ AC_ARG_WITH(backends,
 )
 
 if test "$aqbanking_backends" = "all"; then
-  aqbanking_backends="aqhbci aqofxconnect aqebics aqpaypal aqnone aqgivve"
+  aqbanking_backends="aqhbci aqebics aqpaypal aqnone aqgivve"
 fi
 
 for f in ${aqbanking_backends}; do
@@ -257,11 +257,6 @@ for f in ${aqbanking_backends}; do
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqebics"
       aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqebics/libaqebics.la"
       AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQEBICS, 1, [plugin availability])
-      ;;
-    aqofxconnect)
-      aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqofxconnect"
-      aqbanking_plugins_backends_libs="$aqbanking_plugins_backends_libs aqofxconnect/libaqofxconnect.la"
-      AC_DEFINE(AQBANKING_WITH_PLUGIN_BACKEND_AQOFXCONNECT, 1, [plugin availability])
       ;;
     aqpaypal)
       aqbanking_plugins_backends_dirs="$aqbanking_plugins_backends_dirs aqpaypal"
@@ -1020,34 +1015,6 @@ AC_MSG_RESULT($aqhbci_datadir)
 
 ###-------------------------------------------------------------------------
 #
-# Configure stuff for backend AqOfxConnect
-#
-
-# Common settings
-aqofxconnect_internal_libs="${abs_top_builddir}/src/libs/plugins/backends/aqofxconnect/libaqofxconnect.la"
-aqofxconnect_includes="${aqbanking_includes}"
-aqofxconnect_libs="-L\${libdir} -laqofxconnect"
-
-case "$aqbanking_backends" in *aqofxconnect*)
-  case "$OS_TYPE" in
-      posix)
-          ;;
-      windows)
-          AC_DEFINE_UNQUOTED(BUILDING_AQOFXCONNECT_DLL,1, [Define if DLL is built])
-          ;;
-  esac
-  ;;
-esac
-
-AS_SCRUB_INCLUDE(aqofxconnect_includes)
-AC_SUBST(aqofxconnect_includes)
-AC_SUBST(aqofxconnect_internal_libs)
-AC_SUBST(aqofxconnect_libs)
-#AC_DEFINE_UNQUOTED(AQOFXCONNECT_DATA, "${aqofxconnect_data}", [data dir])
-
-
-###-------------------------------------------------------------------------
-#
 # Configure stuff for backend AqPaypal
 #
 
@@ -1330,13 +1297,6 @@ AC_CONFIG_FILES([
   src/libs/plugins/backends/aqhbci/applayer/xml/Makefile
   src/libs/plugins/backends/aqhbci/control/Makefile
   src/libs/plugins/backends/aqhbci/version.h
-  src/libs/plugins/backends/aqofxconnect/Makefile
-  src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml
-  src/libs/plugins/backends/aqofxconnect/v1/Makefile
-  src/libs/plugins/backends/aqofxconnect/v2/Makefile
-  src/libs/plugins/backends/aqofxconnect/control/Makefile
-  src/libs/plugins/backends/aqofxconnect/common/Makefile
-  src/libs/plugins/backends/aqofxconnect/dialogs/Makefile
   src/libs/plugins/backends/aqpaypal/Makefile
   src/libs/plugins/backends/aqpaypal/aqpaypal.xml
   src/libs/plugins/backends/aqpaypal/control/Makefile

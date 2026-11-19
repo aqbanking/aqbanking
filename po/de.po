@@ -202,7 +202,6 @@ msgstr "Die Datei wurde erfolgreich importiert."
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:784
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:739
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:891
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:933
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:912
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:674
 msgid "Next"
@@ -410,8 +409,6 @@ msgstr "Wählen Sie Banking-Modul (Backend)"
 #: src/libs/plugins/backends/aqhbci/dialogs/w_hbciversioncombo.c:28
 #: src/libs/plugins/backends/aqhbci/dialogs/w_usercombo.c:47
 #: src/libs/plugins/backends/aqhbci/dialogs/w_tanmethodcombo.c:37
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:615
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:655
 msgid "-- select --"
 msgstr "-- auswählen --"
 
@@ -2287,7 +2284,6 @@ msgstr "Server-Schlüssel importiert."
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:790
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:745
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:897
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:940
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:918
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:680
 msgid "Finish"
@@ -2347,7 +2343,6 @@ msgid "AqHBCI finished."
 msgstr "AqHBCI abgeschlossen."
 
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:255
-#: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:363
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:77
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:363
 #, c-format
@@ -2361,17 +2356,11 @@ msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden (%d)\t"
 
 #. while aq
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:297
-#: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:386
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:102
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:432
 #, c-format
 msgid "Unlocking customer \"%lu\""
 msgstr "Freigeben von Benutzer \"%lu\""
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.dlg:69
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.dlg:100
-msgid "Retrieve Account List"
-msgstr "Kontoliste abrufen"
 
 #: src/libs/plugins/backends/aqhbci/applayer/outbox.c:307
 #, c-format
@@ -2491,7 +2480,6 @@ msgstr "Ergebnis der VOP: Auftrag abgelehnt (z.B. falsche IBAN)"
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:1071
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1039
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1066
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1048
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1102
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1132
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1157
@@ -2913,7 +2901,6 @@ msgstr ""
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_zkacard.c:974
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_newkeyfile.c:1085
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_importkeyfile.c:1079
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1062
 #: src/libs/plugins/backends/aqebics/dialogs/dlg_newkeyfile.c:1171
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:804
 #, c-format
@@ -3008,12 +2995,10 @@ msgid "Fetching serverkeys."
 msgstr "Server-Schlüssel abrufen."
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:907
-#: src/libs/plugins/backends/aqofxconnect/provider.c:348
 msgid "Getting Certificate"
 msgstr "Abruf des Zertifikats"
 
 #: src/libs/plugins/backends/aqhbci/banking/provider_online.c:908
-#: src/libs/plugins/backends/aqofxconnect/provider.c:349
 msgid "We are now asking the server for its SSL certificate"
 msgstr "Jetzt wird das SSL-Zertifikat vom Server abgerufen."
 
@@ -3360,13 +3345,11 @@ msgid "The system id and a list of accounts will be retrieved."
 msgstr "Die Systemkennung und Kontenliste werden angefordert."
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:611
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1023
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:749
 msgid "Unable to lock users"
 msgstr "Für die Benutzer konnte kein exklusiver Zugriff erreicht werden"
 
 #: src/libs/plugins/backends/aqhbci/dialogs/dlg_pintan.c:763
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1031
 #: src/libs/plugins/backends/aqpaypal/dlg_newuser.c:759
 msgid "Retrieving SSL certificate"
 msgstr "Server-Zertifikat abrufen"
@@ -4239,193 +4222,18 @@ msgid ""
 "    Print the program and library versions"
 msgstr ""
 
-#. got this list from https://microsoftmoneyoffline.wordpress.com/appid-appver/
-#: src/libs/plugins/backends/aqofxconnect/provider.c:61
-msgid "Intuit Quicken Windows 2020"
-msgstr "Intuit Quicken Windows 2020"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:62
-msgid "Intuit Quicken Windows 2017"
-msgstr "Intuit Quicken Windows 2017"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:63
-msgid "Intuit Quicken Windows 2016"
-msgstr "Intuit Quicken Windows 2016"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:64
-msgid "Intuit Quicken Windows 2015"
-msgstr "Intuit Quicken Windows 2015"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:65
-msgid "Intuit Quicken Windows 2014"
-msgstr "Intuit Quicken Windows 2014"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:66
-msgid "Intuit Quicken Windows 2013"
-msgstr "Intuit Quicken Windows 2013"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:67
-msgid "Intuit Quicken Windows 2012"
-msgstr "Intuit Quicken Windows 2012"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:68
-msgid "Intuit Quicken Windows 2011"
-msgstr "Intuit Quicken Windows 2011"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:69
-msgid "Intuit Quicken Windows 2010"
-msgstr "Intuit Quicken Windows 2010"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:70
-msgid "Intuit Quicken Windows 2009"
-msgstr "Intuit Quicken Windows 2009"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:71
-msgid "Intuit Quicken Windows 2008"
-msgstr "Intuit Quicken Windows 2008"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:72
-msgid "Intuit Quicken Windows 2007"
-msgstr "Intuit Quicken Windows 2007"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:73
-msgid "Intuit Quicken Windows 2006"
-msgstr "Intuit Quicken Windows 2006"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:74
-msgid "Intuit Quicken Windows 2005"
-msgstr "Intuit Quicken Windows 2005"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:76
-msgid "Intuit Quicken Mac 2008"
-msgstr "Intuit Quicken Mac 2008"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:77
-msgid "Intuit Quicken Mac 2007"
-msgstr "Intuit Quicken Mac 2007"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:78
-msgid "Intuit Quicken Mac 2006"
-msgstr "Intuit Quicken Mac 2006"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:79
-msgid "Intuit Quicken Mac 2005"
-msgstr "Intuit Quicken Mac 2005"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:81
-msgid "Intuit QuickBooks Windows 2008"
-msgstr "Intuit QuickBooks Windows 2008"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:82
-msgid "Intuit QuickBooks Windows 2007"
-msgstr "Intuit QuickBooks Windows 2007"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:83
-msgid "Intuit QuickBooks Windows 2006"
-msgstr "Intuit QuickBooks Windows 2006"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:84
-msgid "Intuit QuickBooks Windows 2005"
-msgstr "Intuit QuickBooks Windows 2005"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:86
-msgid "Microsoft Money Plus"
-msgstr "Microsoft Money Plus"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:87
-msgid "Microsoft Money 2007"
-msgstr "Microsoft Money 2007"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:88
-msgid "Microsoft Money 2006"
-msgstr "Microsoft Money 2006"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:89
-msgid "Microsoft Money 2005"
-msgstr "Microsoft Money 2005"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:90
-msgid "Microsoft Money 2004"
-msgstr "Microsoft Money 2004"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:91
-msgid "Microsoft Money 2003"
-msgstr "Microsoft Money 2003"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:93
-msgid "ProSaldo Money 2013"
-msgstr "ProSaldo Money 2013"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:420
-msgid "Requesting account list"
-msgstr "Anforderung der Kontenliste"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:421
-msgid ""
-"We are now requesting a list of accounts\n"
-"which can be managed via OFX.\n"
-"<html>We are now requesting a list of accounts which can be managed via "
-"<i>OFX</i>.\n"
-"</html>"
-msgstr ""
-"Eine Liste der über OFX verfügbaren Konten wird nun angefordert. <html> Eine "
-"Liste der über <i>OFX</i> verfügbaren Konten wird nun angefordert. </html>"
-
-#: src/libs/plugins/backends/aqofxconnect/provider.c:452
-msgid "Error importing accounts"
-msgstr "Fehler beim Importieren der Konten"
-
-#: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:368
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:82
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:368
 #, c-format
 msgid "Could not lock user \"%lu\""
 msgstr "Für Benutzer %lu konnte kein exklusiver Zugriff erreicht werden"
 
-#: src/libs/plugins/backends/aqofxconnect/provider_sendcmd.c:390
 #: src/libs/plugins/backends/aqebics/client/provider_sendcmd.c:106
 #: src/libs/plugins/backends/aqpaypal/provider_sendcmd.c:436
 #, c-format
 msgid "Could not unlock user \"%lu\""
 msgstr ""
 "Für den Benutzer %lu konnte der exklusive Zugriff nicht freigegeben werden"
-
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:67
-#, c-format
-msgid "Could not create connection (%d)"
-msgstr "Konnte keine Verbindung herstellen (%d)"
-
-#. send request
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:72
-msgid "Sending request..."
-msgstr "Aufträge werden gesendet..."
-
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:76
-msgid "Network error while sending request"
-msgstr "Netzwerkfehler beim Senden des Auftrags"
-
-#. wait for response
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:83
-msgid "Waiting for response..."
-msgstr "Warte auf Antwort..."
-
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:88
-msgid "Network error while waiting for response"
-msgstr "Netzwerkfehler beim Warten auf Antwort"
-
-#: src/libs/plugins/backends/aqofxconnect/common/io_network.c:167
-#, c-format
-msgid "Saving communication log to %s"
-msgstr "Kommunikations-Logdatei gespeichert nach %s"
-
-#: src/libs/plugins/backends/aqofxconnect/common/n_signon.c:110
-#, c-format
-msgid ""
-"Please enter the password for user %s<html>Please enter the password for "
-"user <b>%s</b></html>"
-msgstr ""
-"Bitte geben Sie das Passwort für Benutzer %s ein.<html>Bitte geben Sie das "
-"Passwort für Benutzer <b>%s</b> ein.<br></html>"
 
 #: src/libs/plugins/backends/aqgivve/provider_request.c:166
 #, c-format
@@ -4436,27 +4244,12 @@ msgstr ""
 "Bitte geben Sie das Passwort für Benutzer %s ein.\n"
 "<html>Bitte geben Sie das Passwort für Benutzer <i>%s</i> ein.<br></html>"
 
-#: src/libs/plugins/backends/aqofxconnect/common/n_signon.c:129
 #: src/libs/plugins/backends/aqpaypal/provider_credentials.c:95
 #: src/libs/plugins/backends/aqpaypal/provider_credentials.c:183
 #: src/libs/plugins/backends/aqgivve/provider_request.c:169
 msgid "Enter Password"
 msgstr "Passwort eingeben"
 
-#: src/libs/plugins/backends/aqofxconnect/common/n_utils.c:94
-#, c-format
-msgid "Received account %s/%s (%s/%s)"
-msgstr "Empfangenes Konto %s/%s (%s/%s)"
-
-#. parse response
-#: src/libs/plugins/backends/aqofxconnect/v1/r_accounts.c:114
-#: src/libs/plugins/backends/aqofxconnect/v1/r_statements.c:111
-#: src/libs/plugins/backends/aqofxconnect/v2/r_accounts.c:110
-#: src/libs/plugins/backends/aqofxconnect/v2/r_statements.c:108
-msgid "Parsing response..."
-msgstr "Untersuche Antwort..."
-
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:83
 #: src/libs/plugins/backends/aqpaypal/control/main.c:35
 msgid ""
 "Commands:\n"
@@ -4464,220 +4257,6 @@ msgid ""
 msgstr ""
 "Kommandos:\n"
 "\n"
-
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:85
-msgid ""
-"  listusers:\n"
-"    blurb file\n"
-"\n"
-msgstr ""
-
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:89
-msgid ""
-"  listaccounts:\n"
-"    blurb file\n"
-"\n"
-msgstr ""
-
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:93
-msgid ""
-"  adduser:\n"
-"    Add a user. \n"
-"\n"
-msgstr ""
-
-#: src/libs/plugins/backends/aqofxconnect/control/control.c:97
-msgid ""
-"  getaccounts:\n"
-"    Retrieve list of accounts. \n"
-"\n"
-msgstr ""
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:608
-msgid "OFX DirectConnect User Setup"
-msgstr "OFX DirectConnect Benutzereinrichtung"
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:740
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:758
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:770
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:782
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:814
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:826
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:858
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:870
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:885
-msgid "Missing Input"
-msgstr "Fehlende Eingabe"
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:740
-msgid "Please enter the name of your bank."
-msgstr "Bitte geben Sie den Namen der Bank ein."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:758
-msgid "Please enter a valid FID code."
-msgstr "Bitte machen Sie eine Angabe zu FID."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:770
-msgid "Please enter a valid ORG code."
-msgstr "Bitte machen Sie eine Angabe zu ORG."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:782
-msgid "Please enter a server address."
-msgstr "Bitte geben Sie eine Server-Adresse ein."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:814
-msgid "Please enter your name."
-msgstr "Bitte geben Sie Ihren Namen ein."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:826
-msgid "Please enter your User ID."
-msgstr "Bitte geben Sie Ihre Benutzerkennung (User ID) ein."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:858
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:870
-msgid "Please select a valid application to emulate."
-msgstr "Bitte wählen Sie eine Anwendung, die emuliert werden soll."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_edituser.c:885
-msgid "Please enter a correct header version (default is 102)."
-msgstr "Bitte wählen Sie eine Header-Version (voreingestellt ist 102)."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:578
-msgid "OFX DirectConnect Setup Wizard"
-msgstr "OFX DirectConnect Einrichtungsassistent"
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:589
-msgid ""
-"<html><p>This dialog assists you in setting up an OFX DirectConnect User.</"
-"p></html>This dialog assists you in setting up an OFX DirectConnect User."
-msgstr ""
-"<html><p>Dieser Dialog unterstützt Sie bei der Einrichtung eines OFX DirectCo"
-"n"
-"nect Zuganges.</"
-"p></html>Dieser Dialog unterstützt Sie bei der Einrichtung eines OFX DirectCon"
-"nect Zuganges."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:600
-msgid ""
-"<html><p>Please enter your bank settings below.</p><p>Click the <b>Select</"
-"b> button to choose from a list of known banks. That will connect to <i>www."
-"ofxhome.com</i> and try to retrieve information about your bank.</p><p>If "
-"you had to manually enter this information because your bank was unknown to "
-"<i>www.ofxhome.com</i> you are kindly asked to submit your bank server "
-"information there to help the next user.</p></html>Click the SELECT button "
-"to choose from a list of\n"
-"known banks. That will connect to \"www.ofxhome.com\" and\n"
-"try to retrieve information about your bank.\n"
-"If you had to manually enter this information because your\n"
-"bank was unknown to \"www.ofxhome.com\" you are kindly\n"
-"asked to submit your bank server information there to help\n"
-"the next user."
-msgstr ""
-"<html><p>Bitte geben Sie unten Ihre Bankdaten ein.</p><p>Klicken Sie auf die S"
-"chaltfläche <b>Auswählen</"
-"b>, um aus einer Liste bekannter Banken auszuwählen. Dadurch wird eine Verbind"
-"ung zu <i>www."
-"ofxhome.com</i> hergestellt und versucht, Informationen über Ihre Bank abzuruf"
-"en. </p><p>Wenn "
-"Sie diese Informationen manuell eingeben mussten, weil Ihre Bank "
-"<i>www.ofxhome.com</i> nicht bekannt war, werden Sie gebeten, Ihre Bankserveri"
-"nformationen "
-"dort einzugeben, um dem nächsten Benutzer zu helfen.</p></html>Klicken Sie auf"
-" die Schaltfläche AUSWÄHLEN,"
-" um aus einer Liste bekannter Banken auszuwählen.\n"
-"Dadurch wird eine Verbindung zu „www.ofxhome.com“ hergestellt und\n"
-"es wird versucht, Informationen über Ihre Bank abzurufen.\n"
-"Wenn Sie diese Informationen manuell eingeben mussten, weil Ihre\n"
-"Bank „www.ofxhome.com“ nicht bekannt war, werden Sie gebeten,\n"
-"Ihre Bankserverinformationen dort einzugeben, um\n"
-"dem nächsten Benutzer zu helfen."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:624
-msgid ""
-"<html><p>Please enter your user settings below.</p><p><i>User Name</i> is "
-"your real name, <i>User Id</i> is assigned to you by the bank after applying "
-"for OFX DirectConnect and <i>Client UID</i> is used by some banks only. If "
-"you do not have such a value in your documents from the bank just leave it "
-"blank.</p></html>Please enter your user settings below.\n"
-"\"User Name\" is your real name, \"User Id\" is\n"
-"assigned to you by the bank after applying for OFX DirectConnect\n"
-"and \"Client UID\" is used by some banks. If you do not have such\n"
-"a value in your documents from the bank just leave it blank."
-msgstr ""
-"<html><p>Bitte geben Sie unten Ihre Benutzereinstellungen ein.</p><p><i>Benutz"
-"ername</i> ist "
-"Ihr richtiger Name, <i>Benutzerkennung</i> wird Ihnen von der Bank nach der Be"
-"antragung "
-"von OFX DirectConnect zugewiesen und <i>Client UID</i> wird nur von einigen Ba"
-"nken verwendet. Wenn "
-"Sie einen solchen Wert in Ihren Unterlagen von der Bank nicht finden, lassen S"
-"ie das Feld einfach "
-"leer. </p></html>Bitte geben Sie unten Ihre Benutzereinstellungen ein.\n"
-"„Benutzername“ ist Ihr richtiger Name, \"Benutzerkennung“ wird\n"
-"Ihnen von der Bank nach der Beantragung von OFX DirectConnect zugewiesen\n"
-"und „Client UID“ wird von einigen Banken verwendet. Wenn Sie keinen solchen\n"
-"Wert in Ihren Unterlagen von der Bank haben, lassen Sie das Feld einfach leer."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:644
-msgid ""
-"<html><p>Please choose the application you want AqBanking to emulate. Not "
-"all banks support all applications and versions, you might have to try "
-"multiple settings.</p></html>Please choose the application you want "
-"AqBanking to emulate.\n"
-"Not all banks support all applications and versions, you might have\n"
-"to try multiple settings."
-msgstr ""
-"<html><p>Bitte wählen Sie die Anwendung aus, die AqBanking emulieren soll. Nic"
-"ht "
-"alle Banken unterstützen alle Anwendungen und Versionen, ggf. müssen Sie versc"
-"hiedene"
-"Einstellungen ausprobieren .</p></html>Bitte wählen Sie die Anwendung aus, die"
-" "
-"AqBanking emulieren soll.\n"
-"Nicht alle Banken unterstützen alle Anwendungen und Versionen, ggf. müssen Sie"
-" \nverschiedene "
-"Einstellungen ausprobieren ."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:683
-msgid ""
-"<html><p>We are now ready to create the user.</p><p>Click the <i>next</i> "
-"button to proceed or <i>abort</i> to abort.</p></html>We are now ready to "
-"create the user.\n"
-"Click the NEXT button to proceed or ABORT to abort."
-msgstr ""
-"<html><p>Es ist nun alles vorbereitet, um den Benutzer zu erzeugen.</p><p>Klic"
-"ken Sie auf <i>Weiter"
-"</i> "
-"um fortzufahren oder <i>Abbrechen</i>um abzubrechen.</p></html>Es ist nun alle"
-"s vorbereitet, um den Benutzer "
-"zu erzeugen.\n"
-"Klicken Sie auf WEITER um fortzufahren oder ABBRECHEN um abzubrechen."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:696
-msgid ""
-"<html><p>The user has been successfully setup.</p><p>You can now try to "
-"retrieve the list of accounts the bank allows you to manage via OFX "
-"DirectConnect.</p><p>Please note that not every banks supports this. If your "
-"bank does not support account list download you will have to add the account "
-"manually.</p></html>The user has been successfully setup.\n"
-"You can now try to retrieve the list of accounts the\n"
-"bank allows you to manage via OFX DirectConnect.\n"
-"Please note that not every banks supports this. If your\n"
-"bank does not support account list download you will have to\n"
-"add the account manually."
-msgstr ""
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1012
-msgid "Setting Up OFX DirectConnect User"
-msgstr "Einrichtung eines OFX DirectConnect-Benutzers"
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_newuser.c:1013
-msgid "The user will be created and the certificate retrieved."
-msgstr "Der Benutzer wird erstellt und das Zertifikat abgerufen."
-
-#: src/libs/plugins/backends/aqofxconnect/dialogs/dlg_ofx_special.c:272
-msgid "OFX DirectConnect Special Settings"
-msgstr "OFX DirectConnect Erweiterte Einstellungen"
 
 #: src/libs/plugins/backends/aqebics/client/provider.c:213
 msgid "No user assigned to this account."
@@ -6330,16 +5909,6 @@ msgstr "HBCI-Backend mit AqHBCI"
 #: src/libs/plugins/backends/aqhbci/aqhbci.xml:6
 msgid "This backend provides support for HBCI using AqHBCI."
 msgstr "Dieses Backend bietet Unterstützung für HBCI mit AqHBCI."
-
-#. type: Content of: <plugin><short>
-#: src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml:4
-msgid "OFX-DirectConnect backend"
-msgstr "OFX DirectConnect Backend"
-
-#. type: Content of: <plugin><descr>
-#: src/libs/plugins/backends/aqofxconnect/aqofxconnect.xml:6
-msgid "This backend provides support for OFX-DirectConnect."
-msgstr "Dieses Backend bietet Unterstützung für OFX-DirectConnect."
 
 #. type: Content of: <plugin><short>
 #: src/libs/plugins/backends/aqnone/aqnone.xml:4
