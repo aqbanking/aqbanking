@@ -141,76 +141,98 @@ int AHB_SWIFT535_Parse_97A(const AHB_SWIFT_TAG *tg,
 }
 
 
-// get names / IDs of security
+/* get names / IDs of security */
 int AHB_SWIFT535_Parse_35B(const AHB_SWIFT_TAG *tg,
                            uint32_t flags,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg)
 {
-  char *p, *s, *ss;
+  const char *p;
+  const char *tokStart;
+  GWEN_BUFFER *tbuf;
   int gotIsin=0;
 
-  p=(char *)AHB_SWIFT_Tag_GetData(tg);
+  p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
 
-  while (*p && *p==32)
+  while (*p && (unsigned char)*p==32)
     p++;
   if (*p==0) {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 35B is empty");
     return 0;
   }
 
-  // get ISIN
+  /* get ISIN */
   if (strncasecmp(p, "ISIN ", 5)==0) {
     p+=5;
-    s=(char *)GWEN_Memory_malloc(1024);
-    if (sscanf(p, " %s ", s)!=1) {
+    while (*p && (unsigned char)*p==32)
+      p++;
+    tokStart=p;
+    while (*p && (unsigned char)*p>32)
+      p++;
+    if (p==tokStart) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 35B: Cannot read ISIN");
-      GWEN_Memory_dealloc(s);
       return 0;
     }
-    p+=strlen(s);
+    tbuf=GWEN_Buffer_new(0, (uint32_t)(p-tokStart)+1, 0, 1);
+    if (!tbuf)
+      return GWEN_ERROR_MEMORY_FULL;
+    if (GWEN_Buffer_AppendBytes(tbuf, tokStart, (uint32_t)(p-tokStart))<0) {
+      GWEN_Buffer_free(tbuf);
+      return GWEN_ERROR_MEMORY_FULL;
+    }
     AHB_SWIFT__SetCharValue535(data, flags, "nameSpace", "ISIN");
-    AHB_SWIFT__SetCharValue535(data, flags, "uniqueId", s);
-    GWEN_Memory_dealloc(s);
+    AHB_SWIFT__SetCharValue535(data, flags, "uniqueId", GWEN_Buffer_GetStart(tbuf));
+    GWEN_Buffer_free(tbuf);
     gotIsin=1;
   }
 
-  // get WKN
-  while (*p && *p<=32)
+  /* get WKN */
+  while (*p && (unsigned char)*p<=32)
     p++;
 
   if (strncasecmp(p, "/DE/", 4)==0) {
     p+=4;
-    s=(char *)GWEN_Memory_malloc(1024);
-    if (sscanf(p, "%s", s)!=1) {
+    tokStart=p;
+    while (*p && (unsigned char)*p>32)
+      p++;
+    if (p==tokStart) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 35B: Cannot read WKN");
-      GWEN_Memory_dealloc(s);
       return 0;
     }
-    p+=strlen(s);
     if (!gotIsin) {
+      tbuf=GWEN_Buffer_new(0, (uint32_t)(p-tokStart)+1, 0, 1);
+      if (!tbuf)
+        return GWEN_ERROR_MEMORY_FULL;
+      if (GWEN_Buffer_AppendBytes(tbuf, tokStart, (uint32_t)(p-tokStart))<0) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_MEMORY_FULL;
+      }
       AHB_SWIFT__SetCharValue535(data, flags, "nameSpace", "WKN");
-      AHB_SWIFT__SetCharValue535(data, flags, "uniqueId", s);
+      AHB_SWIFT__SetCharValue535(data, flags, "uniqueId", GWEN_Buffer_GetStart(tbuf));
+      GWEN_Buffer_free(tbuf);
     }
-    GWEN_Memory_dealloc(s);
   }
 
-  // get security name
-  while (*p && *p<=32)
+  /* get security name */
+  while (*p && (unsigned char)*p<=32)
     p++;
 
-  s=(char *)GWEN_Memory_malloc(1024);
-  ss=s;
+  tbuf=GWEN_Buffer_new(0, 128, 0, 1);
+  if (!tbuf)
+    return GWEN_ERROR_MEMORY_FULL;
   while (*p) {
-    if (*p>=32)
-      *ss++ = *p;
+    if ((unsigned char)*p>=32) {
+      if (GWEN_Buffer_AppendByte(tbuf, *p)<0) {
+        GWEN_Buffer_free(tbuf);
+        return GWEN_ERROR_MEMORY_FULL;
+      }
+    }
     p++;
   }
-  *ss=0;
 
-  AHB_SWIFT__SetCharValue535(data, flags, "name", s);
-  GWEN_Memory_dealloc(s);
+  AHB_SWIFT__SetCharValue535(data, flags, "name", GWEN_Buffer_GetStart(tbuf));
+  GWEN_Buffer_free(tbuf);
 
   return 0;
 }
@@ -273,35 +295,45 @@ int AHB_SWIFT535_Parse_90B(const AHB_SWIFT_TAG *tg,
 }
 
 
-// get date of security price
+/* get date of security price */
 int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
                            uint32_t flags,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg)
 {
-  char *p;
+  const char *p;
   int year, month, day;
+  int i;
   GWEN_DATE *dt;
 
-  p=(char *)AHB_SWIFT_Tag_GetData(tg);
+  p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
 
-  while (*p && *p==32)
+  while (*p && (unsigned char)*p==32)
     p++;
   if (*p==0) {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98A is empty");
     return 0;
   }
 
-  // get date
+  /* get date */
   if (strncasecmp(p, ":PRIC//", 7)==0) {
     p+=7;
+    for (i=0; i<8; i++) {
+      if (!isdigit((unsigned char)p[i])) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98A: Cannot read date");
+        return 0;
+      }
+    }
     if (sscanf(p, "%4d%2d%2d", &year, &month, &day)!=3) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98A: Cannot read date");
       return 0;
     }
     dt=GWEN_Date_fromGregorian(year, month, day);
-    assert(dt);
+    if (!dt) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98A: Invalid date");
+      return GWEN_ERROR_BAD_DATA;
+    }
 
     GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "unitPriceDate", GWEN_Date_GetString(dt));
     GWEN_Date_free(dt);
@@ -311,31 +343,39 @@ int AHB_SWIFT535_Parse_98A(const AHB_SWIFT_TAG *tg,
 }
 
 
-// get date and time of security price
+/* get date and time of security price */
 int AHB_SWIFT535_Parse_98C(const AHB_SWIFT_TAG *tg,
                            uint32_t flags,
                            GWEN_DB_NODE *data,
                            GWEN_DB_NODE *cfg)
 {
-  char *p;
+  const char *p;
   int year, month, day;
   int hour, minute, second;
+  int i;
+  GWEN_DATE *checkDt;
   GWEN_TIME *dt;
   GWEN_BUFFER *bufdt;
 
-  p=(char *)AHB_SWIFT_Tag_GetData(tg);
+  p=AHB_SWIFT_Tag_GetData(tg);
   assert(p);
 
-  while (*p && *p==32)
+  while (*p && (unsigned char)*p==32)
     p++;
   if (*p==0) {
     DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C is empty");
     return 0;
   }
 
-  // get date and time
+  /* get date and time */
   if (strncasecmp(p, ":PRIC//", 7)==0) {
     p+=7;
+    for (i=0; i<14; i++) {
+      if (!isdigit((unsigned char)p[i])) {
+        DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Cannot read date or time");
+        return 0;
+      }
+    }
     if (sscanf(p, "%4d%2d%2d", &year, &month, &day)!=3) {
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Cannot read date");
       return 0;
@@ -345,10 +385,28 @@ int AHB_SWIFT535_Parse_98C(const AHB_SWIFT_TAG *tg,
       DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Cannot read time");
       return 0;
     }
+    if (year<1970 || year>2099 || hour<0 || hour>23 || minute<0 || minute>59 || second<0 || second>59) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Invalid date/time");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    checkDt=GWEN_Date_fromGregorian(year, month, day);
+    if (!checkDt) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Invalid date");
+      return GWEN_ERROR_BAD_DATA;
+    }
+    GWEN_Date_free(checkDt);
+
     dt=GWEN_Time_new(year, month-1, day, hour, minute, second, 0);
-    assert(dt);
+    if (!dt) {
+      DBG_WARN(AQBANKING_LOGDOMAIN, "Tag 98C: Invalid date/time");
+      return GWEN_ERROR_BAD_DATA;
+    }
 
     bufdt=GWEN_Buffer_new(0, 32, 0, 1);
+    if (!bufdt) {
+      GWEN_Time_free(dt);
+      return GWEN_ERROR_MEMORY_FULL;
+    }
     GWEN_Time_toString(dt, "YYYYMMDDhhmmss", bufdt);
     
     GWEN_DB_SetCharValue(data, GWEN_DB_FLAGS_DEFAULT, "unitPriceDateTime", GWEN_Buffer_GetStart(bufdt));
@@ -454,6 +512,7 @@ int AHB_SWIFT535_Import(AHB_SWIFT_TAG_LIST *tl,
       else if (strcasecmp(id, "97A")==0) { /* LocalAccount */
         if (AHB_SWIFT535_Parse_97A(tg, flags, data, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
@@ -472,47 +531,52 @@ int AHB_SWIFT535_Import(AHB_SWIFT_TAG_LIST *tl,
 
     case AHB_SWIFT535_LEVEL_FIN:
       if (strcasecmp(id, "16S")==0 && strcasecmp(da, "FIN")==0)
-        //  docLvl=AHB_SWIFT535_LEVEL_SUBSAFE;
+        /* docLvl=AHB_SWIFT535_LEVEL_SUBSAFE; */
         docLvl=AHB_SWIFT535_LEVEL_TOP;
 
       else if (strcasecmp(id, "16R")==0 && strcasecmp(da, "SUBBAL")==0)
         docLvl=AHB_SWIFT535_LEVEL_SUBBAL;
 
       else if (strcasecmp(id, "35B")==0) { /* name of security */
-        if (AHB_SWIFT535_Parse_35B(tg, flags, dbSecurity, cfg)) {
+        if (!dbSecurity || AHB_SWIFT535_Parse_35B(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
       }
 
       else if (strcasecmp(id, "90B")==0) { /* price of security */
-        if (AHB_SWIFT535_Parse_90B(tg, flags, dbSecurity, cfg)) {
+        if (!dbSecurity || AHB_SWIFT535_Parse_90B(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
       }
 
       else if (strcasecmp(id, "98A")==0) { /* date of security price*/
-        if (AHB_SWIFT535_Parse_98A(tg, flags, dbSecurity, cfg)) {
+        if (!dbSecurity || AHB_SWIFT535_Parse_98A(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
       }
 
       else if (strcasecmp(id, "98C")==0) { /* date and time of security price*/
-        if (AHB_SWIFT535_Parse_98C(tg, flags, dbSecurity, cfg)) {
+        if (!dbSecurity || AHB_SWIFT535_Parse_98C(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }
       }
 
       else if (strcasecmp(id, "93B")==0) { /* units of security */
-        if (AHB_SWIFT535_Parse_93B(tg, flags, dbSecurity, cfg)) {
+        if (!dbSecurity || AHB_SWIFT535_Parse_93B(tg, flags, dbSecurity, cfg)) {
           DBG_WARN(AQBANKING_LOGDOMAIN, "Error in tag %s", id);
+          GWEN_DB_Group_free(dbTemplate);
           GWEN_Gui_ProgressEnd(progressId);
           return -1;
         }

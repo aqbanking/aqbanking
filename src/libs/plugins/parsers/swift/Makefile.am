@@ -39,6 +39,14 @@ swift_la_SOURCES=\
 swift_la_LIBADD = $(gwenhywfar_libs) 
 swift_la_LDFLAGS = -no-undefined $(STRIPALL) -module -avoid-version
 
+noinst_PROGRAMS = swift_test
+swift_test_SOURCES = \
+ $(swift_la_SOURCES) \
+ swift_test.c
+swift_test_CFLAGS = $(AM_CFLAGS)
+swift_test_LDADD = $(gwenhywfar_libs)
+TESTS = swift_test
+
 
 sources:
 	for f in $(swift_la_SOURCES); do \
