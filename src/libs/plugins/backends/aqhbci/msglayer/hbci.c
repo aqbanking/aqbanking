@@ -114,6 +114,11 @@ int AH_HBCI_Init(AH_HBCI *hbci, GWEN_DB_NODE *db)
   hbci->lastVersion=GWEN_DB_GetIntValue(db, "lastVersion", 0, 0);
 
   GWEN_PathManager_DefinePath(AH_PM_LIBNAME, AH_PM_XMLDATADIR);
+  GWEN_PathManager_AddPathFromBundleResource(AH_PM_LIBNAME,
+                                             AH_PM_LIBNAME,
+                                             AH_PM_XMLDATADIR,
+                                             AB_APPLE_BUNDLE_ID,
+                                             AH_XMLDATADIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   GWEN_PathManager_AddPathFromWinReg(AH_PM_LIBNAME,
                                      AH_PM_LIBNAME,

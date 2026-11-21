@@ -569,6 +569,26 @@ fi
 
 ###-------------------------------------------------------------------------
 #
+# check Apple bundle identifier
+#
+AC_MSG_CHECKING(Apple bundle identifier)
+AC_ARG_WITH(bundle-identifier, [  --with-bundle-identifier=Apple bundle identifier],
+  [bundle_identifier="$withval"],
+  [])
+
+if test -n "$bundle_identifier"; then
+  AC_DEFINE_UNQUOTED([AB_APPLE_BUNDLE_ID],
+                     ["$bundle_identifier"],
+                     [Apple bundle identifier])
+else
+  AC_DEFINE([AB_APPLE_BUNDLE_ID], [NULL],
+            [Apple bundle identifier])
+fi
+
+
+
+###-------------------------------------------------------------------------
+#
 # check whether local installation mode is enabled
 #
 

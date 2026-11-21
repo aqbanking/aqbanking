@@ -333,6 +333,11 @@ void _defineLocalePaths(void)
                                      AB_PM_LOCALEDIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_LOCALEDIR);
+  GWEN_PathManager_AddPathFromBundleResource(AB_PM_LIBNAME,
+                                             AB_PM_LIBNAME,
+                                             AB_PM_LOCALEDIR,
+                                             AB_APPLE_BUNDLE_ID,
+                                             LOCALEDIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   /* add folder relative to EXE */
   GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
@@ -359,6 +364,11 @@ void _defineSysconfPaths(void)
                                      AB_PM_SYSCONFDIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_SYSCONFDIR);
+  GWEN_PathManager_AddPathFromBundleResource(AB_PM_LIBNAME,
+                                             AB_PM_LIBNAME,
+                                             AB_PM_SYSCONFDIR,
+                                             AB_APPLE_BUNDLE_ID,
+                                             AQBANKING_SYSCONF_DIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   /* add folder relative to EXE */
   GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
@@ -385,6 +395,11 @@ void _defineDataPaths(void)
                                      AB_PM_DATADIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_DATADIR);
+  GWEN_PathManager_AddPathFromBundleResource(AB_PM_LIBNAME,
+                                             AB_PM_LIBNAME,
+                                             AB_PM_DATADIR,
+                                             AB_APPLE_BUNDLE_ID,
+                                             AQBANKING_DATA_DIR);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   /* add folder relative to EXE */
   GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
@@ -411,6 +426,11 @@ void _defineWizardPaths(void)
                                      AB_PM_WIZARDDIR,
                                      AB_BANKING_REGKEY_PATHS,
                                      AB_BANKING_REGKEY_WIZARDDIR);
+  GWEN_PathManager_AddPathFromBundleResource(AB_PM_LIBNAME,
+                                             AB_PM_LIBNAME,
+                                             AB_PM_WIZARDDIR,
+                                             AB_APPLE_BUNDLE_ID,
+                                             AB_WIZARD_FOLDER);
 #if defined(OS_WIN32) || defined(ENABLE_LOCAL_INSTALL)
   /* add folder relative to EXE */
   GWEN_PathManager_AddRelPath(AB_PM_LIBNAME,
