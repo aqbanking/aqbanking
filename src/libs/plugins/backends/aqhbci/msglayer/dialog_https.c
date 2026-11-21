@@ -195,7 +195,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg)
 
     bbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(tbuf), 0, 1);
     rv=GWEN_Base64_Decode((const unsigned char *) GWEN_Buffer_GetStart(tbuf),
-                          GWEN_Buffer_GetUsedBytes(tbuf),
+                          0,
                           bbuf);
     if (rv) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Could not decode BASE64 message (%d)", rv);
@@ -224,7 +224,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg)
       GWEN_HttpSession_Fini(dlg->httpSession);
       GWEN_HttpSession_free(dlg->httpSession);
       dlg->httpSession=NULL;
-      return rv;
+      return GWEN_ERROR_BAD_DATA;
     }
   }
 
@@ -268,7 +268,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg)
   /* read message size */
   c=*p2;
   *p2=0;
-  if (1!=sscanf(p1, "%d", &msgSize)) {
+  if (1!=sscanf(p1, "%d", &msgSize) || msgSize<=0) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad size field [%s]", p1);
     /* for debugging purposes */
     GWEN_Buffer_Dump(tbuf, 2);
@@ -284,7 +284,7 @@ int AH_Dialog_RecvMessage_Https(AH_DIALOG *dlg, AH_MSG **pMsg)
   *p2=c;
 
   /* check message size */
-  if (GWEN_Buffer_GetUsedBytes(tbuf)<msgSize) {
+  if (GWEN_Buffer_GetUsedBytes(tbuf)<(uint32_t)msgSize) {
     DBG_ERROR(AQHBCI_LOGDOMAIN, "Bad message size (%d<%d)",
               GWEN_Buffer_GetUsedBytes(tbuf), msgSize);
     /* for debugging purposes */

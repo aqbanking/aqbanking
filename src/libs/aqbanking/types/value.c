@@ -120,7 +120,7 @@ AB_VALUE *AB_Value_fromString(const char *s)
 {
   AB_VALUE *v;
   const char *currency=NULL;
-  int conversion_succeeded = 1; // assume conversion will succeed
+  int conversion_succeeded = 1; /* assume conversion will succeed */
   char *tmpString=NULL;
   char *p;
   char *t;
@@ -133,9 +133,11 @@ AB_VALUE *AB_Value_fromString(const char *s)
   }
 
   tmpString=strdup(s);
+  if (!tmpString)
+    return NULL;
   p=tmpString;
 
-  while (*p && *p<33)
+  while (*p && (unsigned char)*p<33)
     p++;
 
   if (*p=='-') {
@@ -160,12 +162,12 @@ AB_VALUE *AB_Value_fromString(const char *s)
     s1=p;
     d1=p;
     while (*s1) {
-      register char c;
+      register unsigned char c;
 
-      c=*(s1++);
+      c=(unsigned char)*(s1++);
       if (isdigit(c) || c=='/')
-        *(d1++)=c;
-      else if (c==decimalComma)
+        *(d1++)=(char)c;
+      else if (c==(unsigned char)decimalComma)
         /* always use '.' as decimal comma */
         *(d1++)='.';
     }
@@ -176,29 +178,40 @@ AB_VALUE *AB_Value_fromString(const char *s)
 
   t=strchr(p, '.');
   if (t) {
-    // remove comma and calculate denominator
-    unsigned long denominator = 1;
+    /* remove decimal point and calculate denominator safely in arbitrary precision */
+    unsigned long fracDigits = 0;
     char *next;
     do {
       next=t+1;
       *t=*next;
-      if (*next != 0)
-        denominator *= 10;
+      if (*next != 0) {
+        if (fracDigits>=10000UL) {
+          conversion_succeeded = 0;
+          break;
+        }
+        fracDigits++;
+      }
       t++;
     }
     while (*next);
 
-    // set denominator to the calculated value
-    mpz_set_ui(mpq_denref(v->value), denominator);
+    if (conversion_succeeded) {
+      /* set denominator to 10^fracDigits without unsigned long overflow */
+      mpz_ui_pow_ui(mpq_denref(v->value), 10UL, fracDigits);
 
-    // set numerator to the resulting integer string without comma
-    if (mpz_set_str(mpq_numref(v->value), p, 10) == -1) {
-      conversion_succeeded = 0;
+      /* set numerator to the resulting integer string without decimal point */
+      if (mpz_set_str(mpq_numref(v->value), p, 10) == -1) {
+        conversion_succeeded = 0;
+      }
     }
   }
   else {
     /*DBG_ERROR(0, "Scanning this value: %s\n", p);*/
     conversion_succeeded = (gmp_sscanf(p, "%Qu", v->value) == 1);
+  }
+
+  if (conversion_succeeded && mpz_sgn(mpq_denref(v->value)) <= 0) {
+    conversion_succeeded = 0;
   }
 
   /* set currency (if any) */

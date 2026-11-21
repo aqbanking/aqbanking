@@ -504,7 +504,7 @@ int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
 
     bbuf=GWEN_Buffer_new(0, GWEN_Buffer_GetUsedBytes(tbuf), 0, 1);
     rv=GWEN_Base64_Decode((const unsigned char *) GWEN_Buffer_GetStart(tbuf),
-                          GWEN_Buffer_GetUsedBytes(tbuf),
+                          0,
                           bbuf);
     if (rv) {
       DBG_INFO(AQFINTS_LOGDOMAIN, "Could not decode BASE64 message (%d)", rv);
@@ -530,7 +530,7 @@ int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
     /* for debugging purposes */
     GWEN_Buffer_Dump(tbuf, 2);
     GWEN_Buffer_free(tbuf);
-    return rv;
+    return GWEN_ERROR_BAD_DATA;
   }
 
   /* trim response */
@@ -538,7 +538,7 @@ int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
 
   /* check message size */
   msgSize=AQFINTS_Transport_DetermineMessageSize(GWEN_Buffer_GetStart(tbuf));
-  if (msgSize<0) {
+  if (msgSize<=0) {
     DBG_INFO(AQFINTS_LOGDOMAIN, "here (%d)", msgSize);
     GWEN_Gui_ProgressLog(0,
                          GWEN_LoggerLevel_Error,
@@ -550,7 +550,7 @@ int transportReallyReceiveMessage(AQFINTS_TRANSPORT *trans, GWEN_BUFFER *buffer)
   }
 
   /* check message size */
-  if (GWEN_Buffer_GetUsedBytes(tbuf)<msgSize) {
+  if (GWEN_Buffer_GetUsedBytes(tbuf)<(uint32_t)msgSize) {
     DBG_ERROR(AQFINTS_LOGDOMAIN, "Bad message size (%d<%d)",
               GWEN_Buffer_GetUsedBytes(tbuf), msgSize);
     /* for debugging purposes */
