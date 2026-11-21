@@ -831,18 +831,23 @@ int AH_Msg_ReadSegment(AH_MSG *msg,
                         GWEN_Buffer_GetPos(mbuf)-startPos);
     /* handle trust info */
     if (flags & GWEN_MSGENGINE_READ_FLAGS_TRUSTINFO) {
-      unsigned int usize;
+      unsigned int endPos;
 
-      usize=GWEN_Buffer_GetPos(mbuf)-(startPos+1)-1;
-      if (GWEN_MsgEngine_AddTrustInfo(e,
-                                      GWEN_Buffer_GetStart(mbuf)+startPos,
-                                      usize,
-                                      p,
-                                      GWEN_MsgEngineTrustLevelHigh,
-                                      startPos)) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "called from here");
-        GWEN_DB_Group_free(tmpdb);
-        return -1;
+      endPos=GWEN_Buffer_GetPos(mbuf);
+      if (endPos>startPos && (endPos-startPos)>2) {
+        unsigned int usize;
+
+        usize=endPos-(startPos+1)-1;
+        if (GWEN_MsgEngine_AddTrustInfo(e,
+                                        GWEN_Buffer_GetStart(mbuf)+startPos,
+                                        usize,
+                                        p,
+                                        GWEN_MsgEngineTrustLevelHigh,
+                                        startPos)) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "called from here");
+          GWEN_DB_Group_free(tmpdb);
+          return -1;
+        }
       }
     } /* if trustInfo handling wanted */
   }
