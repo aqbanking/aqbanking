@@ -230,7 +230,7 @@ int _readAmount(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NOD
     GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Bad currency");
     return GWEN_ERROR_GENERIC;
   }
-  if (!isdigit(*p)) {
+  if (!isdigit((unsigned char)*p)) {
     /* found third character, skip it */
     p++;
     bleft--;
@@ -238,7 +238,7 @@ int _readAmount(const char **pCurrentChar, unsigned int *pBytesLeft, GWEN_DB_NOD
 
   /* value (M) */
   p2=p;
-  while (*p2 && (isdigit(*p2) || *p2==','))
+  while (*p2 && (isdigit((unsigned char)*p2) || *p2==','))
     p2++;
   if (p2==p) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "No value (%s)", p);
@@ -348,8 +348,10 @@ int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft
   p=*pCurrentChar;
   bleft=*pBytesLeft;
 
-  if (bleft>0) {
+  if (bleft>=3 && p[0] && p[1] && p[2]) {
     const char *p2;
+    unsigned int rem;
+    size_t vlen;
     char *s;
     char buffer[32];
     GWEN_DB_NODE *dbGroup;
@@ -363,25 +365,29 @@ int _readAmountFromExtraLine(const char **pCurrentChar, unsigned int *pBytesLeft
     AHB_SWIFT_SetCharValue(dbGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "currency", buffer);
     p+=3;
     bleft-=3;
-    if (*p=='/') { /* Deutsche Bank seems to be sending */
-      p++;         /* a "/" between currency and amount */
+    if (bleft>0 && *p=='/') { /* Deutsche Bank seems to be sending */
+      p++;                    /* a "/" between currency and amount */
       bleft--;
     }
     /* get value */
     p2=p;
-    while (*p2 && *p2!='/')
+    rem=bleft;
+    while (rem>0 && *p2 && *p2!='/') {
       p2++;
+      rem--;
+    }
     if (p2==p) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Bad charges value (%s)", p);
       GWEN_Gui_ProgressLog(0, GWEN_LoggerLevel_Error, "SWIFT: Bad charges value");
       return GWEN_ERROR_GENERIC;
     }
-    s=(char *)GWEN_Memory_malloc(p2-p+1);
-    memmove(s, p, p2-p+1);
-    s[p2-p]=0;
+    vlen=(size_t)(p2-p);
+    s=(char *)GWEN_Memory_malloc(vlen+1);
+    memmove(s, p, vlen);
+    s[vlen]=0;
     AHB_SWIFT_SetCharValue(dbGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "value", s);
     GWEN_Memory_dealloc(s);
-    bleft-=p2-p;
+    bleft=rem;
     p=p2;
 
     *pCurrentChar=p;
