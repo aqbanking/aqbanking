@@ -31,6 +31,8 @@
 static void _parseAndProbablyAddDescriptor(const char *sName, const char *family, int version1,
                                            AB_SWIFT_DESCR_LIST *descrList,
                                            AB_SWIFT_DESCR_LIST *returnDescrList);
+static AB_SWIFT_DESCR_LIST *_sortDescriptorsHighestFirst(AB_SWIFT_DESCR_LIST *srcList);
+static int _descriptorCanonicalRank(const char *s);
 
 
 /* ------------------------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByJob(AH_JOB *j,
     return NULL;
   }
 
-  return returnDescrList;
+  return _sortDescriptorsHighestFirst(returnDescrList);
 }
 
 
@@ -238,5 +240,62 @@ AB_SWIFT_DESCR_LIST *AH_Job_GetSwiftDescriptorsSupportedByUser(AH_JOB *j, const 
     return NULL;
   }
 
-  return returnDescrList;
+  return _sortDescriptorsHighestFirst(returnDescrList);
+}
+
+
+static int _descriptorCanonicalRank(const char *s)
+{
+  if (!(s && *s))
+    return 0;
+  if (strstr(s, "_GBIC")!=NULL || strstr(s, "_DFUE")!=NULL)
+    return 0;
+  if (strstr(s, "urn:iso:std:iso:20022:tech:xsd:")!=NULL)
+    return 2;
+  return 1;
+}
+
+
+static AB_SWIFT_DESCR_LIST *_sortDescriptorsHighestFirst(AB_SWIFT_DESCR_LIST *srcList)
+{
+  AB_SWIFT_DESCR_LIST *sortedList;
+
+  if (srcList==NULL)
+    return NULL;
+
+  sortedList=AB_SwiftDescr_List_new();
+  if (sortedList==NULL)
+    return srcList;
+
+  /* Prefer ISO standard .001.xx before legacy .002./.003., highest minor version, then canonical non-GBIC URN/XSD. */
+  while (AB_SwiftDescr_List_First(srcList)!=NULL) {
+    AB_SWIFT_DESCR *curr;
+    AB_SWIFT_DESCR *best=NULL;
+
+    curr=AB_SwiftDescr_List_First(srcList);
+    while (curr) {
+      if (best==NULL) {
+        best=curr;
+      }
+      else {
+        int cV2=AB_SwiftDescr_GetVersion2(curr);
+        int bV2=AB_SwiftDescr_GetVersion2(best);
+        int cV3=AB_SwiftDescr_GetVersion3(curr);
+        int bV3=AB_SwiftDescr_GetVersion3(best);
+        int cIsIso=(cV2==1)?1:0;
+        int bIsIso=(bV2==1)?1:0;
+        int cRank=_descriptorCanonicalRank(AB_SwiftDescr_GetAlias2(curr));
+        int bRank=_descriptorCanonicalRank(AB_SwiftDescr_GetAlias2(best));
+
+        if (cIsIso>bIsIso ||
+            (cIsIso==bIsIso && (cV3>bV3 || (cV3==bV3 && (cV2<bV2 || (cV2==bV2 && cRank>bRank))))))
+          best=curr;
+      }
+      curr=AB_SwiftDescr_List_Next(curr);
+    }
+    AB_SwiftDescr_List_Del(best);
+    AB_SwiftDescr_List_Add(best, sortedList);
+  }
+  AB_SwiftDescr_List_free(srcList);
+  return sortedList;
 }

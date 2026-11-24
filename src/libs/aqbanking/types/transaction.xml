@@ -834,6 +834,8 @@
         <item name="loadCellPhone"/>
 
         <item name="getEStatements"/>
+        <item name="getCamtEStatements"/>
+        <item name="getEStatementList"/>
 
 
         <!-- Bit 8 set: transfer jobs, bit 9 cleared: non-SEPA -->
@@ -866,6 +868,8 @@
         <item name="sepaDeleteDatedTransfer"/>
 
         <item name="sepaInternalTransfer"/>
+        <item name="sepaInstantTransfer"/>
+        <item name="sepaB2bDebitNote"/>
 
       </enum>
 
@@ -1843,6 +1847,11 @@
       </group>
 
 
+
+      <member name="camtDetailsJson" type="char_ptr" maxlen="1048576" >
+        <access>public</access><flags>own</flags><setflags>const dup</setflags><getflags>const</getflags>
+        <descr>Compact original CAMT entry details. Not included in booking identity hashes.</descr>
+      </member>
 
       <member name="memo" type="char_ptr" maxlen="1024" >
         <access>public</access>

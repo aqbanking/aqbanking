@@ -56,7 +56,7 @@ aqofxconnect_tool_LDFLAGS=
 DEFS += -DLOCALEDIR=\"$(localedir)\" -DAQBANKING_CLI_VERSION_STRING=\"@AQBANKING_CLI_VERSION_STRING@\"
 
 noinst_HEADERS=globals.h
-#EXTRA_DIST=
+EXTRA_DIST=camt_list_json.c
 
 
 

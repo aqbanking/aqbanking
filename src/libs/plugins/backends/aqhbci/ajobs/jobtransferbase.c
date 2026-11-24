@@ -55,6 +55,8 @@ static void _setLimitsCycleMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbPar
 static void _setLimitsExecDaysOfMonth(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 static void _setLimitsCycleWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
 static void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams);
+static int _parseMinDelayCoded(const char *sCoded);
+static int _descriptorCanonicalRank(const char *s);
 
 static AB_VALUE *_sumUpTransfers(const AH_JOB *j);
 static int _storeValueInArgs(AH_JOB *j, const AB_VALUE *v, const char *valueGroup);
@@ -87,6 +89,7 @@ AH_JOB *AH_Job_TransferBase_new(const char *jobName,
 
   aj->transactionType=tt;
   aj->transactionSubType=tst;
+  aj->singleBookingWanted=1;
 
   /* overwrite some virtual functions */
   AH_Job_SetProcessFn(j, _process);
@@ -105,6 +108,7 @@ void GWENHYWFAR_CB _freeData(void *bp, void *p)
   AB_Value_free(aj->sumValues);
   free(aj->localInstrumentationCode);
   free(aj->profileName);
+  free(aj->descriptor);
   free(aj->fiid);
 
   GWEN_FREE_OBJECT(aj);
@@ -211,6 +215,7 @@ int _exportTransactions(const AH_JOB *j, const AH_JOB_TRANSFERBASE *aj)
 
     if (aj->localInstrumentationCode)
       GWEN_DB_SetCharValue(dbProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", aj->localInstrumentationCode);
+    GWEN_DB_SetIntValue(dbProfile, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", aj->singleBookingWanted?1:0);
 
     dbuf=_exportTransactionsToBuffer(j, aj, dbProfile);
     if (dbuf==NULL) {
@@ -292,7 +297,8 @@ void _replaceCtrlCharsInPurpose(AB_TRANSACTION *trans)
     GWEN_Buffer_AppendString(buf, s);
     t=GWEN_Buffer_GetStart(buf);
     while (*t) {
-      if (iscntrl(*t))
+      unsigned char uc=(unsigned char)*t;
+      if (uc<0x20 || uc==0x7f)
         *t=' ';
       t++;
     }
@@ -330,6 +336,7 @@ int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **p
 {
   AB_TRANSACTION_LIMITS *lim;
   GWEN_DB_NODE *dbParams;
+  const char *sCoded;
   int i, i1, i2;
 
   dbParams=AH_Job_GetParams(j);
@@ -343,12 +350,21 @@ int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **p
 
   AB_TransactionLimits_SetNeedDate(lim, 1);
 
-  /* set info from BPD */
+  /* set info from BPD (v1 integer fields or v2 semicolon-coded strings) */
   i1=GWEN_DB_GetIntValue(dbParams, "minDelay_FNAL_RCUR", 0, 0);
+  i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);
+  if (i1==0 && i2==0) {
+    sCoded=GWEN_DB_GetCharValue(dbParams, "minDelayCoded", 0, NULL);
+    if (sCoded && *sCoded) {
+      int v=_parseMinDelayCoded(sCoded);
+      if (v<=0)
+        v=1;
+      i1=v;
+      i2=v;
+    }
+  }
   AB_TransactionLimits_SetMinValueSetupTimeRecurring(lim, i1);
   AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
-
-  i2=GWEN_DB_GetIntValue(dbParams, "minDelay_FRST_OOFF", 0, 0);
   AB_TransactionLimits_SetMinValueSetupTimeFirst(lim, i2);
   AB_TransactionLimits_SetMinValueSetupTimeOnce(lim, i2);
 
@@ -357,10 +373,20 @@ int AH_Job_TransferBase_GetLimits_SepaDated(AH_JOB *j, AB_TRANSACTION_LIMITS **p
   AB_TransactionLimits_SetMinValueSetupTime(lim, i);
 
   i1=GWEN_DB_GetIntValue(dbParams, "maxDelay_FNAL_RCUR", 0, 0);
-  AB_TransactionLimits_SetMaxValueSetupTimeRecurring(lim, i1);
-  AB_TransactionLimits_SetMinValueSetupTimeFinal(lim, i1);
-
   i2=GWEN_DB_GetIntValue(dbParams, "maxDelay_FRST_OOFF", 0, 0);
+  if (i1==0 && i2==0) {
+    sCoded=GWEN_DB_GetCharValue(dbParams, "maxDelayCoded", 0, NULL);
+    if (sCoded && *sCoded) {
+      const char *last=strrchr(sCoded, ';');
+      int v=atoi(last?(last+1):sCoded);
+      if (v<=0)
+        v=90;
+      i1=v;
+      i2=v;
+    }
+  }
+  AB_TransactionLimits_SetMaxValueSetupTimeRecurring(lim, i1);
+  AB_TransactionLimits_SetMaxValueSetupTimeFinal(lim, i1);
   AB_TransactionLimits_SetMaxValueSetupTimeFirst(lim, i2);
   AB_TransactionLimits_SetMaxValueSetupTimeOnce(lim, i2);
 
@@ -1063,19 +1089,47 @@ int AH_Job_TransferBase_SelectPainProfile(AH_JOB *j, int version1)
   dbArgs=AH_Job_GetArguments(j);
   assert(dbArgs);
 
-  /* check for "pain.VERSION1.*" */
-  descrList=AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", version1);
+  /* Prefer job-level BPD format restrictions (SupportedSepaFormats / supportedFormat) before user HISPAS descriptors */
+  descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, "SupportedSepaFormats", "Format", "pain", version1);
+  if (descrList==NULL)
+    descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, "SupportedSepaFormats", "format", "pain", version1);
+  if (descrList==NULL)
+    descrList=AH_Job_GetSwiftDescriptorsSupportedByJob(j, NULL, "supportedFormat", "pain", version1);
+  if (descrList==NULL)
+    descrList=AH_Job_GetSwiftDescriptorsSupportedByUser(j, "pain", version1);
   if (descrList) {
     AB_SWIFT_DESCR *descr;
+    AB_SWIFT_DESCR *bestDescr=NULL;
     const char *s;
 
+    /* Prefer ISO standard pain.001/008.001.xx, highest minor version, then canonical non-GBIC descriptor */
     descr=AB_SwiftDescr_List_First(descrList);
-    assert(descr);
+    while (descr) {
+      if (bestDescr==NULL) {
+        bestDescr=descr;
+      }
+      else {
+        int dV2=AB_SwiftDescr_GetVersion2(descr);
+        int bV2=AB_SwiftDescr_GetVersion2(bestDescr);
+        int dV3=AB_SwiftDescr_GetVersion3(descr);
+        int bV3=AB_SwiftDescr_GetVersion3(bestDescr);
+        int dIsIso=(dV2==1)?1:0;
+        int bIsIso=(bV2==1)?1:0;
+        int dRank=_descriptorCanonicalRank(AB_SwiftDescr_GetAlias2(descr));
+        int bRank=_descriptorCanonicalRank(AB_SwiftDescr_GetAlias2(bestDescr));
 
-    s=AB_SwiftDescr_GetAlias2(descr);
+        if (dIsIso>bIsIso ||
+            (dIsIso==bIsIso && (dV3>bV3 || (dV3==bV3 && (dV2<bV2 || (dV2==bV2 && dRank>bRank))))))
+          bestDescr=descr;
+      }
+      descr=AB_SwiftDescr_List_Next(descr);
+    }
+    assert(bestDescr);
+
+    s=AB_SwiftDescr_GetAlias2(bestDescr);
     DBG_INFO(AQHBCI_LOGDOMAIN, "Selecting PAIN format [%s]", s);
     _setDescriptor(j, s);
-    _setProfileName(j, AB_SwiftDescr_GetAlias1(descr));
+    _setProfileName(j, AB_SwiftDescr_GetAlias1(bestDescr));
 
     AB_SwiftDescr_List_free(descrList);
   }
@@ -1216,6 +1270,122 @@ void _setLimitsCycleWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams)
 
 
 
+static int _descriptorCanonicalRank(const char *s)
+{
+  if (!(s && *s))
+    return 0;
+  if (strstr(s, "_GBIC")!=NULL || strstr(s, "_DFUE")!=NULL)
+    return 0;
+  if (strstr(s, "urn:iso:std:iso:20022:tech:xsd:")!=NULL)
+    return 2;
+  return 1;
+}
+
+
+
+static int _parseMinDelayCoded(const char *sCoded)
+{
+  const char *p;
+  int hasCutoff=0;
+  int best=0;
+  int lastVal=-1;
+
+  if (!(sCoded && *sCoded))
+    return 0;
+
+  p=sCoded;
+  while (*p) {
+    const char *end;
+    size_t len;
+    int allDigits=1;
+    size_t k;
+
+    while (*p==';' || *p==' ')
+      p++;
+    if (*p=='\0')
+      break;
+    end=p;
+    while (*end && *end!=';')
+      end++;
+    len=(size_t)(end-p);
+    while (len>0 && p[len-1]==' ')
+      len--;
+    if (len==6) {
+      for (k=0; k<len; k++) {
+        if (!isdigit((unsigned char)p[k])) {
+          allDigits=0;
+          break;
+        }
+      }
+      if (allDigits) {
+        hasCutoff=1;
+        break;
+      }
+    }
+    p=end;
+  }
+
+  p=sCoded;
+  while (*p) {
+    const char *tokStart;
+    const char *end;
+    size_t len;
+    int allDigits=1;
+    int val=0;
+    size_t k;
+
+    while (*p==';' || *p==' ')
+      p++;
+    if (*p=='\0')
+      break;
+    tokStart=p;
+    end=p;
+    while (*end && *end!=';')
+      end++;
+    len=(size_t)(end-tokStart);
+    while (len>0 && tokStart[len-1]==' ')
+      len--;
+    if (len==0) {
+      p=end;
+      continue;
+    }
+    for (k=0; k<len; k++) {
+      if (!isdigit((unsigned char)tokStart[k])) {
+        allDigits=0;
+        break;
+      }
+      val=val*10+(tokStart[k]-'0');
+    }
+    if (hasCutoff) {
+      if (allDigits && len>=1 && len<=3) {
+        lastVal=val;
+      }
+      else if (allDigits && len==6 && lastVal>0 && lastVal<=365) {
+        if (lastVal>best)
+          best=lastVal;
+        lastVal=-1;
+      }
+      else {
+        lastVal=-1;
+      }
+    }
+    else {
+      if (allDigits && len>=1 && len<=3)
+        lastVal=val;
+      else
+        lastVal=-1;
+    }
+    p=end;
+  }
+
+  if (!hasCutoff && lastVal>0 && lastVal<=365)
+    best=lastVal;
+
+  return best;
+}
+
+
+
 void _setLimitsExecDaysOfWeek(AB_TRANSACTION_LIMITS *lim, GWEN_DB_NODE *dbParams)
 {
   const char *s;
@@ -1255,6 +1425,7 @@ int AH_Job_TransferBase_Prepare(AH_JOB *j, int painProfile, const char *localIns
     dbArgs=AH_Job_GetArguments(j);
 
     /* set singleBookingWanted */
+    aj->singleBookingWanted=(singleBookingAllowed)?1:0;
     GWEN_DB_SetCharValue(dbArgs, GWEN_DB_FLAGS_OVERWRITE_VARS, "singleBookingWanted", (singleBookingAllowed)?"J":"N");
 
     /* calculate sum */

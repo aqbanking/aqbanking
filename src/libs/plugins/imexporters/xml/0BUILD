@@ -78,6 +78,7 @@
 
   
     <extradist>
+      camt_batch.c
     </extradist>
 
     <writeFile name="xml.xml" install="$(aqbanking_plugin_installdir)/imexporters" />

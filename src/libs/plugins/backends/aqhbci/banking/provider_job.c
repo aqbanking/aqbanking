@@ -24,6 +24,8 @@
 #include "aqhbci/ajobs/jobsepadebitdatedmulticreate_l.h"
 #include "aqhbci/ajobs/jobsepacor1datedsinglecreate_l.h"
 #include "aqhbci/ajobs/jobsepacor1datedmulticreate_l.h"
+#include "aqhbci/ajobs/jobsepainstantxfer_l.h"
+#include "aqhbci/ajobs/jobsepab2bdebit_l.h"
 
 #include "aqhbci/ajobs/jobsepastandingorderdelete_l.h"
 #include "aqhbci/ajobs/jobsepastandingordercreate_l.h"
@@ -123,6 +125,29 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
     }
     break;
 
+  case AB_Transaction_CommandSepaInstantTransfer:
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_TRANSFER)) {
+      mj=AH_Job_SepaInstantTransferMulti_new(pro, mu, ma);
+      if (mj==NULL) {
+        mj=AH_Job_SepaInstantTransferSingle_new(pro, mu, ma);
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job SepaInstantTransfer not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    else {
+      mj=AH_Job_SepaInstantTransferSingle_new(pro, mu, ma);
+      if (mj==NULL) {
+        mj=AH_Job_SepaInstantTransferMulti_new(pro, mu, ma);
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job SepaInstantTransfer not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    break;
+
   case AB_Transaction_CommandSepaDebitNote:
     if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
       DBG_INFO(AQHBCI_LOGDOMAIN, "Customer prefers multi jobs");
@@ -202,6 +227,29 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
     }
     break;
 
+  case AB_Transaction_CommandSepaB2bDebitNote:
+    if (!(aFlags & AH_BANK_FLAGS_SEPA_PREFER_SINGLE_DEBITNOTE)) {
+      mj=AH_Job_SepaB2bDebitDatedMultiCreate_new(pro, mu, ma);
+      if (mj==NULL) {
+        mj=AH_Job_SepaB2bDebitDatedSingleCreate_new(pro, mu, ma);
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job SepaB2bDebit not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    else {
+      mj=AH_Job_SepaB2bDebitDatedSingleCreate_new(pro, mu, ma);
+      if (mj==NULL) {
+        mj=AH_Job_SepaB2bDebitDatedMultiCreate_new(pro, mu, ma);
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job SepaB2bDebit not supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    break;
+
   case AB_Transaction_CommandSepaCreateStandingOrder:
     mj=AH_Job_SepaStandingOrderCreate_new(pro, mu, ma);
     if (mj==NULL) {
@@ -233,14 +281,42 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
     break;
 
   case AB_Transaction_CommandGetEStatements:
-    mj=AH_Job_GetEStatements_new(pro, mu, ma);
-    if (mj==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
-      mj=AH_Job_GetEStatements2_new(pro, mu, ma);
+    if (aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD) {
+      mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
       if (mj==NULL) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 supported with this account");
-        return GWEN_ERROR_NOT_AVAILABLE;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementsCAMT not supported with this account, trying GetEStatements");
       }
+    }
+    if (mj==NULL) {
+      mj=AH_Job_GetEStatements_new(pro, mu, ma);
+      if (mj==NULL) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
+        mj=AH_Job_GetEStatements2_new(pro, mu, ma);
+        if (mj==NULL && !(aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements2 not supported with this account, trying GetEStatementsCAMT");
+          mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
+        }
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 nor GetEStatementsCAMT supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    break;
+
+  case AB_Transaction_CommandGetCamtEStatements:
+    mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
+    if (mj==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementsCAMT not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Transaction_CommandGetEStatementList:
+    mj=AH_Job_GetEStatementList_new(pro, mu, ma);
+    if (mj==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementList not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
 
@@ -283,8 +359,20 @@ int AH_Provider_GetMultiHbciJob(AB_PROVIDER *pro,
     mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaTransferMulti");
     break;
 
+  case AB_Transaction_CommandSepaInstantTransfer:
+    mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaInstantTransferMulti");
+    break;
+
   case AB_Transaction_CommandSepaDebitNote:
     mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaDebitDatedMultiCreate");
+    break;
+
+  case AB_Transaction_CommandSepaFlashDebitNote:
+    mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaCor1DebitDatedMultiCreate");
+    break;
+
+  case AB_Transaction_CommandSepaB2bDebitNote:
+    mj=AH_Outbox_FindTransferJob(outbox, mu, ma, "JobSepaB2bDebitDatedMultiCreate");
     break;
 
   default:

@@ -80,6 +80,8 @@
       jobgetestatements_l.h
       jobgetdepot_l.h
       jobsepainternalxfer_l.h
+      jobsepainstantxfer_l.h
+      jobsepab2bdebit_l.h
     </headers>
   
   
@@ -108,6 +110,8 @@
       jobgetestatements.c
       jobgetdepot.c
       jobsepainternalxfer.c
+      jobsepainstantxfer.c
+      jobsepab2bdebit.c
     </sources>
 
     <data install="$(aqbanking_plugin_installdir)/providers" >
@@ -140,8 +144,11 @@
       jobsepastandingorderdelete.xml
       jobgetestatements.xml
       jobgetestatements2.xml
+      jobgetestatements_camt.xml
       jobgetdepot.xml
       jobsepainternalxfer.xml
+      jobsepainstantxfer.xml
+      jobsepab2bdebit.xml
     </extradist>
 
     <buildFiles>
@@ -164,8 +171,11 @@
         jobsepastandingorderdelete.xml
         jobgetestatements.xml
         jobgetestatements2.xml
+        jobgetestatements_camt.xml
         jobgetdepot.xml
         jobsepainternalxfer.xml
+        jobsepainstantxfer.xml
+        jobsepab2bdebit.xml
       </input>
 
       <output>

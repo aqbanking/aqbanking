@@ -108,6 +108,7 @@
 
 
     <extradist>
+      camt_list_json.c
     </extradist>
 
 

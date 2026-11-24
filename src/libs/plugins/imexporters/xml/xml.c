@@ -39,6 +39,8 @@ GWEN_INHERIT(AB_IMEXPORTER, AB_IMEXPORTER_XML);
  * ------------------------------------------------------------------------------------------------
  */
 
+#include "camt_batch.c"
+
 static void _readAccountsFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData);
 static int _readSecuritiesFromDb(AB_IMEXPORTER_CONTEXT *ctx, GWEN_DB_NODE *dbData);
 static AB_TRANSACTION *dbToTransaction(GWEN_DB_NODE *dbAccount, GWEN_DB_NODE *dbTransaction);
@@ -163,6 +165,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     GWEN_DB_NODE *dbSubParams;
     const char *schemaName;
     GWEN_XMLNODE *xmlDocData;
+    GWEN_XMLNODE *camtOriginal=NULL;
     GWEN_DB_NODE *dbData;
     int rv;
     uint32_t xmlFlags=GWEN_XML_FLAGS_HANDLE_COMMENTS | GWEN_XML_FLAGS_HANDLE_HEADERS;
@@ -185,6 +188,7 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     }
 
     schemaName=GWEN_DB_GetCharValue(dbSubParams, "schema", 0, NULL);
+    if (aqbCamtDocument(xmlDocData) || (schemaName && strncasecmp(schemaName, "camt_", 5)==0)) camtOriginal=GWEN_XMLNode_dup(xmlDocData);
     if (!(schemaName && *schemaName)) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Importing file without specified schema.");
       dbData=AB_ImExporterXML_ImportIntoDbWithoutSchema(ie, xmlDocData);
@@ -196,8 +200,17 @@ int AB_ImExporterXML_Import(AB_IMEXPORTER *ie,
     if (dbData==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "here");
       GWEN_XMLNode_free(xmlDocData);
+      if (camtOriginal) GWEN_XMLNode_free(camtOriginal);
       return GWEN_ERROR_BAD_DATA;
     }
+    if (camtOriginal && aqbCamtPreserve(camtOriginal, dbData, schemaName)<0) {
+      DBG_ERROR(AQBANKING_LOGDOMAIN, "CAMT detail mapping or size limit failed; refusing partial statement import");
+      GWEN_XMLNode_free(xmlDocData);
+      GWEN_XMLNode_free(camtOriginal);
+      GWEN_DB_Group_free(dbData);
+      return GWEN_ERROR_BAD_DATA;
+    }
+    if (camtOriginal) GWEN_XMLNode_free(camtOriginal);
     GWEN_XMLNode_free(xmlDocData);
 
     /* import into context */

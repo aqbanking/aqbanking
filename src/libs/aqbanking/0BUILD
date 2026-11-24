@@ -69,6 +69,7 @@
       banking_l.h
       banking_p.h
       i18n_l.h
+      camt_batch_json.h
     </headers>
   
   

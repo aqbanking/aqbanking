@@ -954,7 +954,9 @@ int writeJobsAsContextFile(AB_TRANSACTION_LIST2 *tList, const char *ctxFile)
 
 AB_TRANSACTION *createAndCheckRequest(AB_BANKING *ab, AB_ACCOUNT_SPEC *as, AB_TRANSACTION_COMMAND cmd)
 {
-  if (AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd)) {
+  if (AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd) ||
+      cmd==AB_Transaction_CommandGetCamtEStatements ||
+      cmd==AB_Transaction_CommandGetEStatementList) {
     AB_TRANSACTION *j;
 
     j=AB_Transaction_new();
@@ -998,7 +1000,8 @@ int createAndAddRequest(AB_BANKING *ab,
       if (toDate)
         AB_Transaction_SetLastDate(j, toDate);
     }
-    else if (cmd==AB_Transaction_CommandGetEStatements) {
+    else if (cmd==AB_Transaction_CommandGetEStatements ||
+             cmd==AB_Transaction_CommandGetCamtEStatements) {
       if (fromDate)
         AB_Transaction_SetFirstDate(j, fromDate);
       if (number>0)
@@ -1075,6 +1078,20 @@ int createAndAddRequests(AB_BANKING *ab,
 
   if (requestFlags & AQBANKING_TOOL_REQUEST_ESTATEMENTS) {
     rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatements, fromDate, toDate, ignoreUnsupported,
+                           ackMethod, number);
+    if (rv)
+      return rv;
+  }
+
+  if (requestFlags & AQBANKING_TOOL_REQUEST_CAMT_ESTATEMENTS) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetCamtEStatements, fromDate, toDate, ignoreUnsupported,
+                           ackMethod, number);
+    if (rv)
+      return rv;
+  }
+
+  if (requestFlags & AQBANKING_TOOL_REQUEST_ESTATEMENT_LIST) {
+    rv=createAndAddRequest(ab, tList, as, AB_Transaction_CommandGetEStatementList, fromDate, toDate, ignoreUnsupported,
                            ackMethod, number);
     if (rv)
       return rv;

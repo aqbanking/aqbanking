@@ -26,6 +26,7 @@ struct AH_JOB_TRANSFERBASE {
   char *localInstrumentationCode;
 
   AB_VALUE *sumValues;
+  int singleBookingWanted;
 };
 
 
