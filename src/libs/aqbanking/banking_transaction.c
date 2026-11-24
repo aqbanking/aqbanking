@@ -10,11 +10,59 @@
 
 /* This file is included by banking.c */
 
+#include <limits.h>
 
+static int _abTxCountUtf8Chars(const char *s);
 static int _checkStringForSepaCharset(const char *s, int restricted);
 static int _checkStringForAlNum(const char *s, int lcase);
 static int _checkFieldAgainstLimits(const char *fieldName, const char *s, int maxs, int mustNotBeEmpty);
 
+
+
+
+static int _abTxCountUtf8Chars(const char *s)
+{
+  const unsigned char *p=(const unsigned char *)s;
+  int count=0;
+
+  if (!p)
+    return -1;
+  while (*p) {
+    unsigned char c=p[0];
+    int seqLen=0;
+
+    if (c<0x80) {
+      seqLen=1;
+    }
+    else if (c>=0xc2 && c<=0xdf) {
+      if ((p[1]&0xc0)!=0x80)
+        return -1;
+      seqLen=2;
+    }
+    else if (c>=0xe0 && c<=0xef) {
+      if ((p[1]&0xc0)!=0x80 || (p[2]&0xc0)!=0x80)
+        return -1;
+      if ((c==0xe0 && p[1]<0xa0) || (c==0xed && p[1]>=0xa0))
+        return -1;
+      seqLen=3;
+    }
+    else if (c>=0xf0 && c<=0xf4) {
+      if ((p[1]&0xc0)!=0x80 || (p[2]&0xc0)!=0x80 || (p[3]&0xc0)!=0x80)
+        return -1;
+      if ((c==0xf0 && p[1]<0x90) || (c==0xf4 && p[1]>0x8f))
+        return -1;
+      seqLen=4;
+    }
+    else {
+      return -1;
+    }
+    if (count==INT_MAX)
+      return -1;
+    count++;
+    p+=seqLen;
+  }
+  return count;
+}
 
 
 
@@ -38,6 +86,40 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
   purpose=AB_Transaction_GetPurpose(t);
   if (purpose && *purpose) {
     GWEN_STRINGLIST *sl;
+
+    /* A flat SEPA debit remittance uses the same aggregate bank limit without
+     * adding physical line breaks that would change the payment reference.
+     * Keep the legacy per-line path for multiline input and other commands. */
+    if ((AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaDebitNote ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaFlashDebitNote) &&
+        !strchr(purpose, '\n') && maxn>=0 && maxs>=0) {
+      const char *q=purpose;
+      int hasNonWs=0;
+      int limit=(maxn>0 && maxs>0)?((maxs>140/maxn)?140:maxs*maxn):((maxs>0 && maxs<140)?maxs:140);
+      int chars;
+
+      if (strchr(purpose, '\r')) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "SEPA debit purpose contains invalid CR character");
+        return GWEN_ERROR_INVALID;
+      }
+      while (*q) {
+        if (*q!=' ' && *q!='\t') {
+          hasNonWs=1;
+          break;
+        }
+        q++;
+      }
+      if (!hasNonWs) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "SEPA debit purpose is whitespace-only");
+        return GWEN_ERROR_INVALID;
+      }
+      chars=_abTxCountUtf8Chars(purpose);
+      if (chars<1 || chars>limit) {
+        DBG_ERROR(AQBANKING_LOGDOMAIN, "SEPA debit purpose exceeds character limit or is invalid UTF-8");
+        return GWEN_ERROR_INVALID;
+      }
+      return 0;
+    }
 
     sl=GWEN_StringList_fromString(purpose, "\n", 0);
     if (sl && GWEN_StringList_Count(sl)) {

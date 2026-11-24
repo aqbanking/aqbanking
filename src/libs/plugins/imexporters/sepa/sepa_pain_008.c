@@ -5,6 +5,57 @@
 
 
 #include <aqbanking/banking_be.h>
+#include <limits.h>
+
+
+
+static int _sepaPain008CountUtf8Chars(const char *s);
+
+
+
+static int _sepaPain008CountUtf8Chars(const char *s)
+{
+  const unsigned char *p=(const unsigned char *)s;
+  int count=0;
+
+  if (!p)
+    return -1;
+  while (*p) {
+    unsigned char c=p[0];
+    int seqLen=0;
+
+    if (c<0x80) {
+      seqLen=1;
+    }
+    else if (c>=0xc2 && c<=0xdf) {
+      if ((p[1]&0xc0)!=0x80)
+        return -1;
+      seqLen=2;
+    }
+    else if (c>=0xe0 && c<=0xef) {
+      if ((p[1]&0xc0)!=0x80 || (p[2]&0xc0)!=0x80)
+        return -1;
+      if ((c==0xe0 && p[1]<0xa0) || (c==0xed && p[1]>=0xa0))
+        return -1;
+      seqLen=3;
+    }
+    else if (c>=0xf0 && c<=0xf4) {
+      if ((p[1]&0xc0)!=0x80 || (p[2]&0xc0)!=0x80 || (p[3]&0xc0)!=0x80)
+        return -1;
+      if ((c==0xf0 && p[1]<0x90) || (c==0xf4 && p[1]>0x8f))
+        return -1;
+      seqLen=4;
+    }
+    else {
+      return -1;
+    }
+    if (count==INT_MAX)
+      return -1;
+    count++;
+    p+=seqLen;
+  }
+  return count;
+}
 
 
 
@@ -388,6 +439,7 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
         nnn=GWEN_XMLNode_new(GWEN_XMLNodeTypeTag, "RmtInf");
         if (nnn) {
           GWEN_BUFFER *tbuf;
+          int uchars;
 
           GWEN_XMLNode_AddChild(nn, nnn);
 
@@ -399,10 +451,16 @@ int AH_ImExporterSEPA_Export_Pain_008(AB_IMEXPORTER *ie,
             return GWEN_ERROR_BAD_DATA;
           }
 
+          /* SEPA limits characters, not UTF-8 bytes. Never truncate a purpose. */
+          uchars=_sepaPain008CountUtf8Chars(s);
+          if (uchars<1 || uchars>140) {
+            DBG_ERROR(AQBANKING_LOGDOMAIN, "Invalid or overlong SEPA debit purpose");
+            AB_Transaction_List2Iterator_free(it);
+            AH_ImExporter_Sepa_PmtInf_List_free(pl);
+            return GWEN_ERROR_BAD_DATA;
+          }
           tbuf=GWEN_Buffer_new(0, 140, 0, 1);
           GWEN_Buffer_AppendString(tbuf, s);
-          if (GWEN_Buffer_GetUsedBytes(tbuf)>140)
-            GWEN_Buffer_Crop(tbuf, 0, 140);
 
           AH_ImExporterSEPA_XmlSetCharValueEscaped(nnn, "Ustrd", GWEN_Buffer_GetStart(tbuf));
 
