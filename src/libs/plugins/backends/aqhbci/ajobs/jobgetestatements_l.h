@@ -22,6 +22,14 @@ AH_JOB *AH_Job_GetEStatements_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *acco
 AH_JOB *AH_Job_GetEStatements2_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
 
 
+/* This job uses HBCI/FinTS job "HKECA" */
+AH_JOB *AH_Job_GetEStatementsCAMT_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+
+
+/* This job uses HBCI/FinTS job "HKKAU" */
+AH_JOB *AH_Job_GetEStatementList_new(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *account);
+
+
 #endif /* AH_JOB_GETESTATEMENTS_L_H */
 
 

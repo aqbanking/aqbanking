@@ -233,14 +233,42 @@ int AH_Provider_CreateHbciJob(AB_PROVIDER *pro, AB_USER *mu, AB_ACCOUNT *ma, int
     break;
 
   case AB_Transaction_CommandGetEStatements:
-    mj=AH_Job_GetEStatements_new(pro, mu, ma);
-    if (mj==NULL) {
-      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
-      mj=AH_Job_GetEStatements2_new(pro, mu, ma);
+    if (aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD) {
+      mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
       if (mj==NULL) {
-        DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 supported with this account");
-        return GWEN_ERROR_NOT_AVAILABLE;
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementsCAMT not supported with this account, trying GetEStatements");
       }
+    }
+    if (mj==NULL) {
+      mj=AH_Job_GetEStatements_new(pro, mu, ma);
+      if (mj==NULL) {
+        DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements not supported with this account, trying GetEStatements2");
+        mj=AH_Job_GetEStatements2_new(pro, mu, ma);
+        if (mj==NULL && !(aFlags & AH_BANK_FLAGS_PREFER_CAMT_DOWNLOAD)) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatements2 not supported with this account, trying GetEStatementsCAMT");
+          mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
+        }
+        if (mj==NULL) {
+          DBG_INFO(AQHBCI_LOGDOMAIN, "Neither job GetEStatements nor GetEStatements2 nor GetEStatementsCAMT supported with this account");
+          return GWEN_ERROR_NOT_AVAILABLE;
+        }
+      }
+    }
+    break;
+
+  case AB_Transaction_CommandGetCamtEStatements:
+    mj=AH_Job_GetEStatementsCAMT_new(pro, mu, ma);
+    if (mj==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementsCAMT not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
+    }
+    break;
+
+  case AB_Transaction_CommandGetEStatementList:
+    mj=AH_Job_GetEStatementList_new(pro, mu, ma);
+    if (mj==NULL) {
+      DBG_INFO(AQHBCI_LOGDOMAIN, "Job GetEStatementList not supported with this account");
+      return GWEN_ERROR_NOT_AVAILABLE;
     }
     break;
 

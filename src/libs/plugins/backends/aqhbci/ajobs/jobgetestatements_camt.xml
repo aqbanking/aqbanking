@@ -1,0 +1,277 @@
+
+
+<SEGs>
+
+ <!--
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Kontoauszug camt (HKECA / HIECA / HIECAS, Version 1)
+  ---------------------------------------------------------------------
+  -->
+
+ <!-- Kundennachricht -->
+ <SEGdef id="GetEStatementsCAMT" code="HKECA" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i" version="1" />
+   <GROUP name="SupportedFormats" delimiter=":" terminator="" >
+     <ELEM name="format" type="ascii" maxsize="256" minnum="1" maxnum="99" />
+   </GROUP>
+   <ELEM  name="eStatementNum"  type="num"   maxsize="5"  minnum="0" />
+   <ELEM  name="eStatementYear" type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="maxEntries"     type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="attach"         type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Banknachricht -->
+ <SEGdef id="EStatementCAMT" code="HIECA" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM  name="format" type="ascii" maxsize="256" minnum="0" />
+   <GROUP name="ReportTimespan" delimiter=":" minnum="0" maxnum="1" >
+     <ELEM name="startDate" type="date" minsize="8" maxsize="8" minnum="0" />
+     <ELEM name="endDate"   type="date" minsize="8" maxsize="8" minnum="0" />
+   </GROUP>
+   <ELEM name="date"        type="date"  minsize="8" maxsize="8" minnum="0" />
+   <ELEM name="year"        type="num"   maxsize="4" minnum="0" />
+   <ELEM name="num"         type="num"   maxsize="5" minnum="0" />
+   <GROUP name="booked" delimiter=":" terminator="" >
+     <ELEM name="eStatement" type="bin" trustlevel="2" maxnum="0" readbin="0" />
+   </GROUP>
+   <ELEM name="balanceInfo" type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="custTerms"   type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="adText"      type="ascii" maxsize="65536" minnum="0" />
+   <ELEM name="iban"        type="ascii" maxsize="34"    minnum="0" />
+   <ELEM name="bic"         type="ascii" maxsize="11"    minnum="0" />
+   <ELEM name="name1"       type="ascii" maxsize="35"    minnum="0" />
+   <ELEM name="name2"       type="ascii" maxsize="35"    minnum="0" />
+   <ELEM name="suffix"      type="ascii" maxsize="35"    minnum="0" />
+   <ELEM name="ackCode"     type="bin"   minnum="0" readbin="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Beschreibungssegment -->
+ <SEGdef code="HIECAS" version="1" isbpdjob="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="BPDJob" version="2" />
+   <GROUP delimiter=":" terminator="" >
+     <ELEM name="eStatementNumAllowed" type="alpha" maxsize="1" />
+     <ELEM name="ackNeeded"            type="alpha" maxsize="1" />
+     <ELEM name="maxEntriesAllowed"    type="alpha" maxsize="1" />
+     <ELEM name="supportedFormat"      type="ascii" maxsize="256" minnum="0" maxnum="99" />
+   </GROUP>
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!--
+  --------------------------------------------------------------------
+   Geschaeftsvorfall: Uebersicht Kontoauszuege (HKKAU / HIKAU / HIKAUS)
+  ---------------------------------------------------------------------
+  -->
+
+ <!-- Version 1 -->
+ <SEGdef id="GetEStatementList" code="HKKAU" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="ktv" version="2" />
+   <ELEM  name="maxEntries" type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="attach"     type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef id="EStatementList" code="HIKAU" version="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM  name="num"          type="num"   maxsize="5"  minnum="0" />
+   <ELEM  name="ack"          type="an"    maxsize="4"  minnum="0" />
+   <ELEM  name="downloadable" type="alpha" maxsize="1"  minnum="0" />
+   <ELEM  name="year"         type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="date"         type="date"  minsize="8"  maxsize="8" minnum="0" />
+   <ELEM  name="time"         type="time"  minsize="6"  maxsize="6" minnum="0" />
+   <ELEM  name="createType"   type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef code="HIKAUS" version="1" isbpdjob="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="BPDJob" version="2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Version 2 -->
+ <SEGdef id="GetEStatementList" code="HKKAU" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i" version="1" />
+   <ELEM  name="maxEntries" type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="attach"     type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef id="EStatementList" code="HIKAU" version="2"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM  name="num"          type="num"   maxsize="5"  minnum="0" />
+   <ELEM  name="ack"          type="an"    maxsize="4"  minnum="0" />
+   <ELEM  name="downloadable" type="alpha" maxsize="1"  minnum="0" />
+   <ELEM  name="year"         type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="date"         type="date"  minsize="8"  maxsize="8" minnum="0" />
+   <ELEM  name="time"         type="time"  minsize="6"  maxsize="6" minnum="0" />
+   <ELEM  name="createType"   type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef code="HIKAUS" version="2" isbpdjob="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="BPDJob" version="2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+
+ <!-- Version 3 -->
+ <SEGdef id="GetEStatementList" code="HKKAU" version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <GROUP type="kti_i" version="1" />
+   <ELEM  name="maxEntries" type="num"   maxsize="4"  minnum="0" />
+   <ELEM  name="attach"     type="ascii" maxsize="35" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef id="EStatementList" code="HIKAU" version="3"
+         delimiter="+" terminator="'" >
+   <GROUP type="SegHead" name="head" />
+   <ELEM  name="num"          type="num"   maxsize="5"   minnum="0" />
+   <ELEM  name="ack"          type="an"    maxsize="4"   minnum="0" />
+   <ELEM  name="downloadable" type="alpha" maxsize="1"   minnum="0" />
+   <ELEM  name="year"         type="num"   maxsize="4"   minnum="0" />
+   <ELEM  name="date"         type="date"  minsize="8"   maxsize="8"   minnum="0" />
+   <ELEM  name="time"         type="time"  minsize="6"   maxsize="6"   minnum="0" />
+   <ELEM  name="createType"   type="ascii" maxsize="35"  minnum="0" />
+   <ELEM  name="docId"        type="ascii" maxsize="256" minnum="0" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+ <SEGdef code="HIKAUS" version="3" isbpdjob="1"
+         delimiter="+" terminator="'" >
+   <GROUP type="BPDJob" version="2" />
+
+   <VALUES>
+     <VALUE path="head/code">%code</VALUE>
+     <VALUE path="head/version">%version</VALUE>
+   </VALUES>
+ </SEGdef>
+
+</SEGs>
+
+
+<JOBs>
+
+ <!-- Geschaeftsvorfall: Kontoauszug camt (Version 1) -->
+ <JOBdef id="JobGetEStatementsCAMT"
+         code="HKECA"
+         params="HIECAS"
+         version="1"
+         crypt="1"
+         sign="1"
+         needBPD="1"
+         response="EStatementCAMT"
+         attachable="1"
+         single="1"
+ >
+   <SEG type="GetEStatementsCAMT" version="1" />
+ </JOBdef>
+
+
+ <!-- Geschaeftsvorfall: Uebersicht Kontoauszuege (Version 1-3) -->
+ <JOBdef id="JobGetEStatementList"
+         code="HKKAU"
+         params="HIKAUS"
+         version="1"
+         crypt="1"
+         sign="1"
+         needBPD="1"
+         response="EStatementList"
+         attachable="1"
+         single="1"
+ >
+   <SEG type="GetEStatementList" version="1" />
+ </JOBdef>
+
+ <JOBdef id="JobGetEStatementList"
+         code="HKKAU"
+         params="HIKAUS"
+         version="2"
+         crypt="1"
+         sign="1"
+         needBPD="1"
+         response="EStatementList"
+         attachable="1"
+         single="1"
+ >
+   <SEG type="GetEStatementList" version="2" />
+ </JOBdef>
+
+ <JOBdef id="JobGetEStatementList"
+         code="HKKAU"
+         params="HIKAUS"
+         version="3"
+         crypt="1"
+         sign="1"
+         needBPD="1"
+         response="EStatementList"
+         attachable="1"
+         single="1"
+ >
+   <SEG type="GetEStatementList" version="3" />
+ </JOBdef>
+
+</JOBs>

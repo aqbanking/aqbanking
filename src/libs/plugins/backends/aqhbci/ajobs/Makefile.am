@@ -94,6 +94,7 @@ xmlfiles=\
   $(srcdir)/jobsepastandingorderdelete.xml \
   $(srcdir)/jobgetestatements.xml \
   $(srcdir)/jobgetestatements2.xml \
+  $(srcdir)/jobgetestatements_camt.xml \
   $(srcdir)/jobgetdepot.xml \
   $(srcdir)/jobsepainternalxfer.xml
 

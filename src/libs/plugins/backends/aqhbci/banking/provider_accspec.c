@@ -257,6 +257,8 @@ int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
     AB_Transaction_CommandSepaDeleteStandingOrder,
     AB_Transaction_CommandSepaGetStandingOrders,
     AB_Transaction_CommandGetEStatements,
+    AB_Transaction_CommandGetCamtEStatements,
+    AB_Transaction_CommandGetEStatementList,
     AB_Transaction_CommandGetDepot,
     AB_Transaction_CommandUnknown
   };

@@ -140,6 +140,7 @@
       jobsepastandingorderdelete.xml
       jobgetestatements.xml
       jobgetestatements2.xml
+      jobgetestatements_camt.xml
       jobgetdepot.xml
       jobsepainternalxfer.xml
     </extradist>
@@ -164,6 +165,7 @@
         jobsepastandingorderdelete.xml
         jobgetestatements.xml
         jobgetestatements2.xml
+        jobgetestatements_camt.xml
         jobgetdepot.xml
         jobsepainternalxfer.xml
       </input>
