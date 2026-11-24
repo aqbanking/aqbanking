@@ -64,6 +64,7 @@ int AB_ImExporterXML_ImportSepa(AB_IMEXPORTER *ie,
     xmlDocSchema=AB_ImExporterXML_DetermineSchema(ie, xmlDocData);
     if (xmlDocSchema==NULL) {
       DBG_INFO(AQBANKING_LOGDOMAIN, "Could not determine schema file.");
+      GWEN_XMLNode_free(xmlDocData);
       return GWEN_ERROR_GENERIC;
     }
   }
@@ -71,6 +72,7 @@ int AB_ImExporterXML_ImportSepa(AB_IMEXPORTER *ie,
     xmlDocSchema=AB_ImExporterXML_ReadSchemaFromFile(ie, schemaName);
     if (xmlDocSchema==NULL) {
       DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not load schema file for \"%s\"", schemaName);
+      GWEN_XMLNode_free(xmlDocData);
       return GWEN_ERROR_GENERIC;
     }
   }
@@ -78,11 +80,15 @@ int AB_ImExporterXML_ImportSepa(AB_IMEXPORTER *ie,
   xmlNodeSchema=GWEN_XMLNode_FindFirstTag(xmlDocSchema, "Import", NULL, NULL);
   if (!xmlNodeSchema) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Import\" in schema file.");
+    GWEN_XMLNode_free(xmlDocSchema);
+    GWEN_XMLNode_free(xmlDocData);
     return GWEN_ERROR_GENERIC;
   }
 
   dbData=GWEN_DB_Group_new("data");
   rv=GWEN_Xml2Db(xmlDocData, xmlNodeSchema, dbData);
+  GWEN_XMLNode_free(xmlDocSchema);
+  GWEN_XMLNode_free(xmlDocData);
 #if 0
   DBG_ERROR(AQBANKING_LOGDOMAIN, "Data received:");
   GWEN_DB_Dump(dbData, 2);

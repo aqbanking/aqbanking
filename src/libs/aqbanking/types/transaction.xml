@@ -868,6 +868,8 @@
         <item name="sepaDeleteDatedTransfer"/>
 
         <item name="sepaInternalTransfer"/>
+        <item name="sepaInstantTransfer"/>
+        <item name="sepaB2bDebitNote"/>
 
       </enum>
 

@@ -42,6 +42,8 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
   const char *profileName;
   const char *profileFile;
   int use_flash_debitnote;
+  int use_b2b_debitnote;
+  int use_instant_transfer;
   AB_IMEXPORTER_CONTEXT *ctx=0;
   AB_ACCOUNT_SPEC *forcedAccount=NULL;
   AB_TRANSACTION_LIST2 *jobList;
@@ -66,6 +68,8 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
   inFile=GWEN_DB_GetCharValue(db, "inFile", 0, 0);
   use_flash_debitnote=GWEN_DB_GetIntValue(db, "useCOR1", 0, 0);
+  use_b2b_debitnote=GWEN_DB_GetIntValue(db, "useB2B", 0, 0);
+  use_instant_transfer=GWEN_DB_GetIntValue(db, "instant", 0, 0);
   dryRun=GWEN_DB_GetIntValue(db, "dryRun", 0, 0);
 
   rv=AB_Banking_Init(ab);
@@ -109,14 +113,14 @@ int sepaMultiJobs(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv,
 
   /* create jobs from imported transactions */
   cmd=(multisepa_type == AQBANKING_TOOL_SEPA_TRANSFERS)
-      // The command was sepatransfers, so we create JobSepaTransfer
-      ? AB_Transaction_CommandSepaTransfer
-      // The command was sepadebitnotes, so we create some debit note
-      : (use_flash_debitnote
-         // Did we have --use-COR1? Use this extra job type
-         ? AB_Transaction_CommandSepaFlashDebitNote
-         // No COR1, just standard CORE debit note
-         : AB_Transaction_CommandSepaDebitNote);
+      ? (use_instant_transfer
+         ? AB_Transaction_CommandSepaInstantTransfer
+         : AB_Transaction_CommandSepaTransfer)
+      : (use_b2b_debitnote
+         ? AB_Transaction_CommandSepaB2bDebitNote
+         : (use_flash_debitnote
+            ? AB_Transaction_CommandSepaFlashDebitNote
+            : AB_Transaction_CommandSepaDebitNote));
 
   /* populate job list */
   jobList=AB_Transaction_List2_new();
@@ -301,6 +305,28 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "If given, use COR1 variant of debit notes (faster), otherwise CORE (slower)"     /* long description */
     },
     {
+      0,
+      GWEN_ArgsType_Int,
+      "useB2B",
+      0,
+      1,
+      0,
+      "use-B2B",
+      "If given, use B2B variant of debit notes (Firmenlastschrift, HKBSE/HKBME)",
+      "If given, use B2B variant of debit notes (Firmenlastschrift, HKBSE/HKBME)"
+    },
+    {
+      0,
+      GWEN_ArgsType_Int,
+      "instant",
+      0,
+      1,
+      0,
+      "instant",
+      "Execute transfers as SEPA Instant Payments (HKIPZ/HKIPM)",
+      "Execute transfers as SEPA Instant Payments (HKIPZ/HKIPM)"
+    },
+    {
       0, /* flags */
       GWEN_ArgsType_Int,            /* type */
       "dryRun",                     /* name */
@@ -409,12 +435,17 @@ int _createJobsFromContext(AB_IMEXPORTER_CONTEXT *ctx,
       }
 
       AB_Transaction_SetType(job,
-                             (cmd==AB_Transaction_CommandSepaTransfer)
+                             (cmd==AB_Transaction_CommandSepaTransfer || cmd==AB_Transaction_CommandSepaInstantTransfer)
                              ? AB_Transaction_TypeTransfer
                              : AB_Transaction_TypeDebitNote
                             );
+      AB_Transaction_SetCommand(job, cmd);
 
       lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, cmd);
+      if (lim==NULL && cmd==AB_Transaction_CommandSepaInstantTransfer)
+        lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaTransfer);
+      else if (lim==NULL && cmd==AB_Transaction_CommandSepaB2bDebitNote)
+        lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaDebitNote);
       if (lim==NULL) {
         DBG_ERROR(0, "Job %s not supported, in line %d.", AB_Transaction_Command_toString(cmd), transactionLine);
         reallyExecute=0;
@@ -431,7 +462,6 @@ int _createJobsFromContext(AB_IMEXPORTER_CONTEXT *ctx,
           AB_Transaction_SetStatus(job, AB_Transaction_StatusError);
         }
       }
-      AB_Transaction_SetCommand(job, cmd);
 
       AB_Transaction_List2_PushBack(jobList, job);
       transactionLine++;

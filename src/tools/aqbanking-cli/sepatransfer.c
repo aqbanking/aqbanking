@@ -37,6 +37,7 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   const char *ctxFile;
   AB_TRANSACTION *t;
   int noCheck;
+  int instant;
 
   /* parse command line arguments */
   db=_readCommandLine(dbArgs, argc, argv);
@@ -47,6 +48,7 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
   /* read arguments */
   noCheck=GWEN_DB_GetIntValue(db, "noCheck", 0, 0);
+  instant=GWEN_DB_GetIntValue(db, "instant", 0, 0);
   ctxFile=GWEN_DB_GetCharValue(db, "ctxfile", 0, 0);
 
   /* init AqBanking */
@@ -74,8 +76,18 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
   }
   AB_Transaction_SetUniqueAccountId(t, AB_AccountSpec_GetUniqueId(as));
 
-  /* check for date; if given create a dated transfer */
-  if (AB_Transaction_GetDate(t))
+  /* instant transfer or dated transfer check */
+  if (instant) {
+    if (AB_Transaction_GetDate(t)) {
+      fprintf(stderr, "ERROR: Instant transfers cannot have an execution date.\n");
+      AB_Transaction_free(t);
+      AB_AccountSpec_free(as);
+      AB_Banking_Fini(ab);
+      return 1;
+    }
+    AB_Transaction_SetCommand(t, AB_Transaction_CommandSepaInstantTransfer);
+  }
+  else if (AB_Transaction_GetDate(t))
     AB_Transaction_SetCommand(t, AB_Transaction_CommandCreateDatedTransfer);
 
   /* set local account info from selected AB_ACCOUNT_SPEC */
@@ -92,8 +104,11 @@ int sepaTransfer(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
   /* probably check against transaction limits */
   if (!noCheck) {
+    const AB_TRANSACTION_LIMITS *lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_GetCommand(t));
+    if (lim==NULL && AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaInstantTransfer)
+      lim=AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_CommandSepaTransfer);
     rv=checkTransactionLimits(t,
-                              AB_AccountSpec_GetTransactionLimitsForCommand(as, AB_Transaction_GetCommand(t)),
+                              lim,
                               AQBANKING_TOOL_LIMITFLAGS_PURPOSE  |
                               AQBANKING_TOOL_LIMITFLAGS_NAMES    |
                               AQBANKING_TOOL_LIMITFLAGS_DATE     |
@@ -333,6 +348,17 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "noCheck",          /* long option */
       "Dont check transaction limits",  /* short description */
       "Dont check transaction limits"
+    },
+    {
+      0,
+      GWEN_ArgsType_Int,
+      "instant",
+      0,
+      1,
+      NULL,
+      "instant",
+      "Execute as SEPA Instant Payment (HKIPZ/HKIPM)",
+      "Execute as SEPA Instant Payment (HKIPZ/HKIPM)"
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */

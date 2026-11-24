@@ -250,8 +250,10 @@ int _createTransactionLimitsForAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT 
     /*AB_Transaction_CommandLoadCellPhone, */
     AB_Transaction_CommandSepaTransfer,
     AB_Transaction_CommandSepaInternalTransfer,
+    AB_Transaction_CommandSepaInstantTransfer,
     AB_Transaction_CommandSepaDebitNote,
     AB_Transaction_CommandSepaFlashDebitNote,
+    AB_Transaction_CommandSepaB2bDebitNote,
     AB_Transaction_CommandSepaCreateStandingOrder,
     AB_Transaction_CommandSepaModifyStandingOrder,
     AB_Transaction_CommandSepaDeleteStandingOrder,

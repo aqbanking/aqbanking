@@ -99,6 +99,7 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
   xmlNodeExport=GWEN_XMLNode_FindFirstTag(xmlDocSchema, "Export", NULL, NULL);
   if (!xmlNodeExport) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Missing \"Export\" in schema file.");
+    GWEN_XMLNode_free(xmlDocSchema);
     return GWEN_ERROR_BAD_DATA;
   }
 
@@ -140,6 +141,7 @@ int AB_ImExporterXML_ExportSepa(AB_IMEXPORTER *ie,
   rv=GWEN_XMLNode_WriteToStream(xmlDocData, xmlCtx, sio);
   if (rv<0) {
     DBG_INFO(AQBANKING_LOGDOMAIN, "here (%d)", rv);
+    GWEN_XmlCtx_free(xmlCtx);
     GWEN_XMLNode_free(xmlDocData);
     GWEN_XMLNode_free(xmlDocSchema);
     return rv;
@@ -182,14 +184,16 @@ GWEN_DB_NODE *_ctxToSepaDb(AB_IMEXPORTER *ie, const AB_IMEXPORTER_CONTEXT *ctx, 
   messageId=_createAndWriteMessageId(ie, "messageId", dbData);
   if (messageId==NULL) {
     DBG_ERROR(AQBANKING_LOGDOMAIN, "Could not generate message id, aborting.");
+    AB_ImExporterXML_PaymentGroup_List_free(paymentGroupList);
     GWEN_DB_Group_free(dbData);
-    return NULL;;
+    return NULL;
   }
   _writeCurrentDateTime("messageDateTime", dbData);
   _sampleTotalTransactions(paymentGroupList, dbData);
 
   _createPaymentInfoIds(paymentGroupList, messageId);
   _writePaymentGroups(paymentGroupList, dbData, dbParams);
+  AB_ImExporterXML_PaymentGroup_List_free(paymentGroupList);
 
   return dbData;
 }
@@ -279,6 +283,7 @@ void _sampleTotalTransactions(AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroupL
   }
 
   _writeAmountToDbWithoutCurrency(totalControlSum, "controlSum", dbData);
+  AB_Value_free(totalControlSum);
   GWEN_DB_SetCharValueFromInt(dbData, GWEN_DB_FLAGS_OVERWRITE_VARS, "numberOfTransactions", totalNumOfTx);
 }
 
@@ -339,7 +344,11 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
      */
 
     /* copy stuff from params */
-    s=GWEN_DB_GetCharValue(dbParams, "LocalInstrumentSEPACode", 0, "CORE");
+    s=GWEN_DB_GetCharValue(dbParams, "LocalInstrumentSEPACode", 0, NULL);
+    if (s && *s)
+      GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "explicitLocalInstrumentSEPACode", s);
+    else
+      s="CORE";
     GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "LocalInstrumentSEPACode", s);
 
     GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "batchBooking",
@@ -362,7 +371,7 @@ void _writePaymentGroups(const AB_IMEXPORTER_XML_PAYMENTGROUP_LIST *paymentGroup
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "ownerName", s);
 
     s=AB_ImExporterXML_PaymentGroup_GetLocalBic(paymentGroup);
-    if (s && *s)
+    if (s && *s && strcasecmp(s, "NOTPROVIDED")!=0)
       GWEN_DB_SetCharValue(dbPaymentGroup, GWEN_DB_FLAGS_OVERWRITE_VARS, "bic", s);
 
     s=AB_ImExporterXML_PaymentGroup_GetLocalIban(paymentGroup);
@@ -439,8 +448,13 @@ void _writeTransactions(const AB_IMEXPORTER_XML_PAYMENTGROUP *paymentGroup, GWEN
 void _writeTransaction(const AB_TRANSACTION *t, GWEN_DB_NODE *dbData)
 {
   const AB_VALUE *v;
+  const char *s;
 
   AB_Transaction_toDb(t, dbData);
+
+  s=AB_Transaction_GetRemoteBic(t);
+  if (!(s && *s) || strcasecmp(s, "NOTPROVIDED")==0)
+    GWEN_DB_DeleteVar(dbData, "remoteBic");
 
   v=AB_Transaction_GetValue(t);
   if (v)

@@ -14,7 +14,7 @@
 -->
 
 
-<Schema>
+<Schema documentType="sepa">
 
   <DocMatches>
     <Match path="Document@xmlns">*pain.008.001.02*</Match>
@@ -104,7 +104,12 @@
             <XmlSetCharValue                     path="ReqdColltnDt"               name="requestedExecutionDate" type="date" template="YYYY-MM-DD" />
             <XmlSetCharValue                     path="Cdtr/Nm"                    name="ownerName" />
             <XmlSetCharValue                     path="CdtrAcct/Id/IBAN"           name="iban" />
-            <XmlSetCharValue                     path="CdtrAgt/FinInstnId/BIC"     name="bic" />
+            <DbIfHasCharData                                                       name="bic">
+              <XmlSetCharValue                   path="CdtrAgt/FinInstnId/BIC"     name="bic" />
+            </DbIfHasCharData>
+            <DbIfNotHasCharData                                                    name="bic">
+              <XmlSetCharValue                   path="CdtrAgt/FinInstnId/Othr/Id" value="NOTPROVIDED" />
+            </DbIfNotHasCharData>
             <XmlSetCharValue                     path="ChrgBr"                     value="SLEV" />
 
             <DbIfHasCharData                                                       name="creditorSchemeId">
@@ -146,7 +151,12 @@
                   
                 </XmlCreateAndEnterElement>
                 
-                <XmlSetCharValue               path="DbtrAgt/FinInstnId/BIC"     name="remoteBic" />
+                <DbIfHasCharData                                                   name="remoteBic">
+                  <XmlSetCharValue             path="DbtrAgt/FinInstnId/BIC"     name="remoteBic" />
+                </DbIfHasCharData>
+                <DbIfNotHasCharData                                                name="remoteBic">
+                  <XmlSetCharValue             path="DbtrAgt/FinInstnId/Othr/Id" value="NOTPROVIDED" />
+                </DbIfNotHasCharData>
                 <XmlSetCharValue               path="Dbtr/Nm"                    name="remoteName" />
                 <XmlSetCharValue               path="DbtrAcct/Id/IBAN"           name="remoteIban" />
                 <XmlSetCharValue               path="RmtInf/Ustrd"               name="purpose" />

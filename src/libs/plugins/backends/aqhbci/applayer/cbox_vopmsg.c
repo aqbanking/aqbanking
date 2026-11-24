@@ -25,7 +25,8 @@
 
 static void _applyVopResultToTransaction(const AH_VOP_RESULT *vr, const char *sRemoteIban, const char *sRemoteName, AB_TRANSACTION *t);
 static AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i);
-static int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg);
+static void _appendSanitizedVopField(GWEN_BUFFER *buf, const char *s);
+static int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg, const AH_VOP_RESULT_LIST *resultList);
 
 
 
@@ -87,7 +88,7 @@ int AH_OutboxCBox_LetUserConfirmVopResult(AH_OUTBOX_CBOX *cbox, AH_JOB *workJob,
   }
 
   DBG_ERROR(AQHBCI_LOGDOMAIN, "Error creating or running dialog, trying simple dialog");
-  rv=_showSimpleGuiMessage(sJobName, sBankName, sUserName, sMsg);
+  rv=_showSimpleGuiMessage(sJobName, sBankName, sUserName, sMsg, resultList);
   AB_BankInfo_free(bankInfo);
   return rv;
 }
@@ -174,12 +175,59 @@ AB_TRANSACTION_VOPRESULT _vopResultCodeToTransactionVopResult(int i)
 
 
 
-int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg)
+void _appendSanitizedVopField(GWEN_BUFFER *buf, const char *s)
+{
+  const unsigned char *p;
+
+  if (!(s && *s))
+    return;
+  p=(const unsigned char *)s;
+  while (*p && GWEN_Buffer_GetUsedBytes(buf)<65536) {
+    if (*p<0x20 || *p==0x7f)
+      GWEN_Buffer_AppendByte(buf, ' ');
+    else
+      GWEN_Buffer_AppendByte(buf, (char)*p);
+    p++;
+  }
+}
+
+
+
+int _showSimpleGuiMessage(const char *sJobName, const char *sBankName, const char *sUserName, const char *sMsg, const AH_VOP_RESULT_LIST *resultList)
 {
   GWEN_BUFFER *guiBuf;
   int rv;
 
-  guiBuf=GWEN_Buffer_new(0, 256, 0, 1);
+  guiBuf=GWEN_Buffer_new(0, 512, 0, 1);
+  if (sMsg && *sMsg) {
+    GWEN_Buffer_AppendString(guiBuf, "AQB_VOP_MSG: ");
+    _appendSanitizedVopField(guiBuf, sMsg);
+    GWEN_Buffer_AppendByte(guiBuf, '\n');
+  }
+  if (resultList) {
+    const AH_VOP_RESULT *vr;
+    int itemCount=0;
+
+    vr=AH_VopResult_List_First(resultList);
+    while (vr && itemCount<1000 && GWEN_Buffer_GetUsedBytes(guiBuf)<60000) {
+      const char *sCode=AH_VopResultCode_toString(AH_VopResult_GetResult(vr));
+      const char *sIban=AH_VopResult_GetRemoteIban(vr);
+      const char *sName=AH_VopResult_GetRemoteName(vr);
+      const char *sAlt=AH_VopResult_GetAltRemoteName(vr);
+
+      GWEN_Buffer_AppendString(guiBuf, "AQB_VOP_ITEM: status=");
+      _appendSanitizedVopField(guiBuf, sCode?sCode:"none");
+      GWEN_Buffer_AppendString(guiBuf, "\tiban=");
+      _appendSanitizedVopField(guiBuf, sIban?sIban:"");
+      GWEN_Buffer_AppendString(guiBuf, "\tname=");
+      _appendSanitizedVopField(guiBuf, sName?sName:"");
+      GWEN_Buffer_AppendString(guiBuf, "\taltName=");
+      _appendSanitizedVopField(guiBuf, sAlt?sAlt:"");
+      GWEN_Buffer_AppendByte(guiBuf, '\n');
+      itemCount++;
+      vr=AH_VopResult_List_Next(vr);
+    }
+  }
   GWEN_Buffer_AppendArgs(guiBuf,
                          I18N("Result of Verification of Payee process at the bank (user %s at %s):\n"
                               "%s\n"

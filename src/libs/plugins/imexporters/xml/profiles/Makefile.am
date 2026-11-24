@@ -16,6 +16,7 @@ profiles_DATA=\
   pain_001_001_09.conf \
   pain_008_003_02.conf \
   pain_008_001_02.conf \
+  pain_008_001_08.conf \
   ofx1.conf \
   ofx2.conf \
   sepa.conf

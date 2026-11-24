@@ -91,7 +91,12 @@ int AB_Banking_CheckTransactionAgainstLimits_Purpose(const AB_TRANSACTION *t, co
      * adding physical line breaks that would change the payment reference.
      * Keep the legacy per-line path for multiline input and other commands. */
     if ((AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaDebitNote ||
-         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaFlashDebitNote) &&
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaFlashDebitNote ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaB2bDebitNote ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaTransfer ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaCreateDatedTransfer ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandCreateDatedTransfer ||
+         AB_Transaction_GetCommand(t)==AB_Transaction_CommandSepaInstantTransfer) &&
         !strchr(purpose, '\n') && maxn>=0 && maxs>=0) {
       const char *q=purpose;
       int hasNonWs=0;
