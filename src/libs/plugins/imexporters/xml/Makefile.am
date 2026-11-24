@@ -51,7 +51,7 @@ noinst_HEADERS=$(build_headers_priv) \
 
 
 
-EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers) README
+EXTRA_DIST=$(typefiles) $(built_sources) $(build_headers) camt_batch.c README
 
 
 

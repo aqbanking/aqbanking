@@ -16,6 +16,8 @@
 
 
 
+#include "camt_list_json.c"
+
 static GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv);
 
 
@@ -118,8 +120,15 @@ int listTrans(AB_BANKING *ab, GWEN_DB_NODE *dbArgs, int argc, char **argv)
 
         t=AB_Transaction_List_FindFirstByType(tl, transactionType, transactionCommand);
         while (t) {
-          rv=addTransactionToBufferByTemplate(t, tmplString, dbuf);
+          rv=GWEN_DB_GetIntValue(db, "aqbJson", 0, 0)?aqbTransactionJson(t, dbuf):addTransactionToBufferByTemplate(t, tmplString, dbuf);
           if (rv<0) {
+            if (GWEN_DB_GetIntValue(db, "aqbJson", 0, 0)) {
+              fprintf(stderr, "ERROR: Failed to serialize transaction JSON (%d)\n", rv);
+              GWEN_Buffer_free(dbuf);
+              AB_ImExporterContext_free(ctx);
+              AB_Banking_Fini(ab);
+              return 4;
+            }
           }
 
           fprintf(stdout, "%s\n", GWEN_Buffer_GetStart(dbuf));
@@ -251,6 +260,10 @@ GWEN_DB_NODE *_readCommandLine(GWEN_DB_NODE *dbArgs, int argc, char **argv)
       "template",                       /* long option */
       "Specify the template for the transaction list output",      /* short description */
       "Specify the template for the transaction list output"       /* long description */
+    },
+    {
+      0, GWEN_ArgsType_Int, "aqbJson", 0, 1, 0, "aqb-json",
+      "Output complete booking JSON lines including preserved CAMT details", 0
     },
     {
       GWEN_ARGS_FLAGS_HELP | GWEN_ARGS_FLAGS_LAST, /* flags */

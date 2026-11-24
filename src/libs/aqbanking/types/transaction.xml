@@ -1844,6 +1844,11 @@
 
 
 
+      <member name="camtDetailsJson" type="char_ptr" maxlen="1048576" >
+        <access>public</access><flags>own</flags><setflags>const dup</setflags><getflags>const</getflags>
+        <descr>Compact original CAMT entry details. Not included in booking identity hashes.</descr>
+      </member>
+
       <member name="memo" type="char_ptr" maxlen="1024" >
         <access>public</access>
         <flags>own with_hash</flags>

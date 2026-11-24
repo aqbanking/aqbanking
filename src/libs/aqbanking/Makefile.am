@@ -40,6 +40,7 @@ DEFS += \
  -DAQBANKING_DATA_DIR=\"$(aqbanking_data_searchdir)\"
 
 noinst_HEADERS=\
+ camt_batch_json.h \
  banking_be.h \
  banking_l.h \
  banking_p.h \
