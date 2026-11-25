@@ -93,7 +93,7 @@ AQFINTS_USERDATA_LIST *AQFINTS_Upd_SampleUpdFromSegmentList(AQFINTS_SEGMENT_LIST
             AQFINTS_UserData_AddAccountData(userData, accountData);
           }
           else {
-            DBG_ERROR(AQFINTS_LOGDOMAIN, "Got account data wihtout prior userData, ignoring accountData");
+            DBG_ERROR(AQFINTS_LOGDOMAIN, "Got account data without prior userData, ignoring accountData");
             AQFINTS_AccountData_free(accountData);
           }
           if (removeFromSegList)

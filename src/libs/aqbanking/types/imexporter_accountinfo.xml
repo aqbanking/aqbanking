@@ -420,7 +420,7 @@
               * @param accountNumber account number to search for (wildcards and jokers allowed) \n
               * @param subAccountId sub account number (wildcards and jokers allowed)            \n
               * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
-              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param currency currency the account uses (wildcards and jokers allowed)         \n
               * @param ty account type (use AB_AccountType_Unknown as wildcard)                  \n
               */                                                                                 \n
              $(api) int $(struct_prefix)_Matches(const $(struct_type) *a,
@@ -512,7 +512,7 @@
               * @param accountNumber account number to search for (wildcards and jokers allowed) \n
               * @param subAccountId sub account number (wildcards and jokers allowed)            \n
               * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
-              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param currency currency the account uses (wildcards and jokers allowed)         \n
               * @param ty account type (use AB_AccountType_Unknown as wildcard)                  \n
               */                                                                                 \n
              $(struct_type) *$(struct_prefix)_List__FindInternal($(struct_type) *a,
@@ -589,7 +589,7 @@
               * @param accountNumber account number to search for (wildcards and jokers allowed) \n
               * @param subAccountId sub account number (wildcards and jokers allowed)            \n
               * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
-              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param currency currency the account uses (wildcards and jokers allowed)         \n
               * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
               */                                                                                 \n
              $(api) $(struct_type) *$(struct_prefix)_List_FindFirst($(struct_type)_LIST *al,
@@ -656,7 +656,7 @@
               * @param accountNumber account number to search for (wildcards and jokers allowed) \n
               * @param subAccountId sub account number (wildcards and jokers allowed)            \n
               * @param iban IBAN to search for (wildcards and jokers allowed)                    \n
-              * @param currency currecny the account uses (wildcards and jokers allowed)         \n
+              * @param currency currency the account uses (wildcards and jokers allowed)         \n
               * @param ty account type (use AB_AccountType_Unknown as wildcard)          \n
               */                                                                                 \n
              $(api) $(struct_type) *$(struct_prefix)_List_FindNext($(struct_type) *a,

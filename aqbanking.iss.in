@@ -140,7 +140,7 @@ begin
   pkgdatadir := datadir + '/@PACKAGE@';
 
   { Now make all the replacements }
-  { Explanation: StringChange(S,FromStr,ToStr): Change all occurances in S of FromStr to ToStr. }
+  { Explanation: StringChange(S,FromStr,ToStr): Change all occurences in S of FromStr to ToStr. }
   StringChange(FileString, '@'+'prefix@', appdir);
   StringChange(FileString, '@'+'libdir@', windir);
   StringChange(FileString, '@'+'all_includes@', '@all_includes@');
@@ -195,7 +195,7 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 ;; *** "Select Destination" wizard page
 ;SelectDirLabel3=Setup will install [name] into the following folder. If you have MinGW installed on your system, you can safely choose MinGW's root folder here as well (e.g. c:\msys\1.0).
 ;
-;de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, können Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
+;de.SelectDirLabel3=Das Setup wird [name] in den folgenden Ordner installieren. Wenn Sie MinGW auf Ihrem Computer installiert haben, kï¿½nnen Sie hier problemlos das Root-Verzeichnis von MinGW angeben (z.B. c:\msys\1.0).
 
 
 ; The customized messages with their translations here.
@@ -203,7 +203,7 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 ; *** Prerequisite message
 PrereqNotFound=The setup program did not find the DLL of the Gwenhywfar package and/or the registry keys of the Gwenhywfar installation. You need to install Gwenhywfar from the setup executable, and then start this setup again.
 
-de.PrereqNotFound=Das Setup-Programm hat die DLL des Gwenhywfar-Pakets und/oder dessen Registry-Keys nicht gefunden. Sie müssen zuerst Gwenhywfar über dessen Setup-Programm installieren und dann dieses Setup-Programm erneut starten.
+de.PrereqNotFound=Das Setup-Programm hat die DLL des Gwenhywfar-Pakets und/oder dessen Registry-Keys nicht gefunden. Sie mï¿½ssen zuerst Gwenhywfar ï¿½ber dessen Setup-Programm installieren und dann dieses Setup-Programm erneut starten.
 
 ; *** "Select Components" wizard page
 FullInstall=Full installation

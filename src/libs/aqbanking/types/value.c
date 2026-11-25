@@ -593,7 +593,7 @@ void AB_Value_toHbciString(const AB_VALUE *v, GWEN_BUFFER *buf)
   tbuf=GWEN_Buffer_new(0, 32, 0, 1);
   AB_Value_toHumanReadableString(v, tbuf, 2, 0);
 
-  /* convert decimal komma */
+  /* convert decimal comma */
   p=GWEN_Buffer_GetStart(tbuf);
   while (*p) {
     if (*p=='.') {

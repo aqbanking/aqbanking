@@ -69,7 +69,7 @@ Create a GWEN_DB node and make it the current node for iteration through all chi
 -----------------------------------------------
 
 Create a GWEN_DB group in the temporary DB and make it the current node for iteration through all children of the schema node.
-After all chidren have been handled the temporary group is deleted.
+After all children have been handled the temporary group is deleted.
 
 
 1.5. <DbSetCharValue name="varname" path="path" >

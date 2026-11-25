@@ -126,7 +126,7 @@ int AIO_OfxGroup_INVSTMTRS_StartTag(AIO_OFX_GROUP *g,
 
 
 /*Even though we look for the DTASOF tag above (we must, so that it can be distinguished from a group),
- nothing is done with the data. The only tag we preocess is the currency definition.*/
+ nothing is done with the data. The only tag we process is the currency definition.*/
 
 int AIO_OfxGroup_INVSTMTRS_AddData(AIO_OFX_GROUP *g, const char *data)
 {

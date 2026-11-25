@@ -366,10 +366,10 @@ services {
 
 bankId="011101613"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -531,10 +531,10 @@ services {
 
 bankId="011104050"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -619,10 +619,10 @@ services {
 
 bankId="011104209"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -3392,7 +3392,7 @@ services {
 }
 
 bankId="021172661"
-bankName="NEW YORK COMMUNTY BANK"
+bankName="NEW YORK COMMUNITY BANK"
 location="WESTBURY"
 street="615 MERRICK AVENUE"
 zipcode="11590-0000"
@@ -34721,7 +34721,7 @@ services {
 }
 
 bankId="061112021"
-bankName="COMMERICAL BK %26 TRUST"
+bankName="COMMERCIAL BK %26 TRUST"
 location="COLUMBUS"
 street="P.O. BOX 120"
 zipcode="31902-0000"
@@ -75849,7 +75849,7 @@ services {
 }
 
 bankId="075904160"
-bankName="ASSOICATED BANK GREEN BAY"
+bankName="ASSOCIATED BANK GREEN BAY"
 location="GREEN BAY"
 street="P O BOX 19097"
 zipcode="54307-9097"
@@ -77736,7 +77736,7 @@ services {
 }
 
 bankId="075912657"
-bankName="ASSOICATED BANK GREEN BAY"
+bankName="ASSOCIATED BANK GREEN BAY"
 location="GREEN BAY"
 street="P O BOX 19097"
 zipcode="54307-9097"
@@ -88171,7 +88171,7 @@ services {
 }
 
 bankId="083908187"
-bankName="KENTUCKY NEIGHORHOOD BANK"
+bankName="KENTUCKY NEIGHBORHOOD BANK"
 location="ELIZABETHTOWN"
 street="PO BOX 2504"
 zipcode="42702-0000"
@@ -90547,7 +90547,7 @@ services {
 }
 
 bankId="084205915"
-bankName="FIRST SECURTIY BANK"
+bankName="FIRST SECURITY BANK"
 location="BATESVILLE"
 street="295 HWY 6 W"
 zipcode="38606-0000"
@@ -92656,7 +92656,7 @@ services {
 }
 
 bankId="091101138"
-bankName="UPPER PENNISULA STATE BANK"
+bankName="UPPER PENINSULA STATE BANK"
 location="ESCANABA"
 street="PO BOX 336"
 zipcode="49829-3521"
@@ -92876,7 +92876,7 @@ services {
 }
 
 bankId="091109350"
-bankName="COMMERICAL NATL BK L%27ANSE"
+bankName="COMMERCIAL NATL BK L%27ANSE"
 location="L%27ANSE"
 street="1 E BROAD STREET"
 zipcode="49946-0098"
@@ -101478,7 +101478,7 @@ services {
 }
 
 bankId="091912042"
-bankName="UNITED PRARIE BANK - OWATONNA"
+bankName="UNITED PRAIRIE BANK - OWATONNA"
 location="OWATONNA"
 street="PO BOX 567"
 zipcode="55060-2337"
@@ -107060,7 +107060,7 @@ services {
 bankId="101105082"
 bankName="ALLIANT BANK"
 location="SEDGWICK"
-street="514 N COMMERICAL"
+street="514 N COMMERCIAL"
 zipcode="67135-1560"
 city="SEDGWICK"
 region="KS"
@@ -123543,7 +123543,7 @@ services {
 }
 
 bankId="111012783"
-bankName="INWOOD NATIOANL BANK"
+bankName="INWOOD NATIONAL BANK"
 location="DALLAS"
 street="7621 INWOOD ROAD"
 zipcode="75209-0000"
@@ -129954,7 +129954,7 @@ services {
 }
 
 bankId="111913329"
-bankName="FIRST NATINAL BANK OF BOSQUE COUNTY"
+bankName="FIRST NATIONAL BANK OF BOSQUE COUNTY"
 location="VALLEY MILLS"
 street="P O BOX 278"
 zipcode="76689-0278"
@@ -130778,7 +130778,7 @@ services {
 }
 
 bankId="111917435"
-bankName="AMERCIAN STATE BANK - CISCO BRANCH"
+bankName="AMERICAN STATE BANK - CISCO BRANCH"
 location="LUBBOCK"
 street="P.O. BOX 1401"
 zipcode="79408-1401"
@@ -137622,7 +137622,7 @@ services {
 }
 
 bankId="114905567"
-bankName="COMMERICAL STATE BANK"
+bankName="COMMERCIAL STATE BANK"
 location="SINTON"
 street="P O BOX 430"
 zipcode="78387-0430"
@@ -143174,10 +143174,10 @@ services {
 
 bankId="122105171"
 bankName="NATIONAL BANK OF ARIZONA"
-location="TUSCON"
+location="TUCSON"
 street="335 NORTH WILMONT ROAD  SUITE 100"
 zipcode="85711-0000"
-city="TUSCON"
+city="TUCSON"
 region="AZ"
 phone="801-9748830"
 services {
@@ -143251,10 +143251,10 @@ services {
 
 bankId="122105320"
 bankName="NATIONAL BANK OF ARIZONA"
-location="TUSCON"
+location="TUCSON"
 street="335 N WILMONT RD  SUITE 100"
 zipcode="85711-0000"
-city="TUSCON"
+city="TUCSON"
 region="AZ"
 phone="801-9748830"
 services {
@@ -143735,10 +143735,10 @@ services {
 
 bankId="122105922"
 bankName="COMMERCE BANK OF ARIZONA"
-location="TUSCON"
+location="TUCSON"
 street="3805 EAST BROADWAY"
 zipcode="85716-0000"
-city="TUSCON"
+city="TUCSON"
 region="AZ"
 phone="520-3255200"
 services {
@@ -152032,10 +152032,10 @@ services {
 
 bankId="211170279"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -152064,10 +152064,10 @@ services {
 
 bankId="211170305"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -152163,10 +152163,10 @@ services {
 
 bankId="211172785"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -152251,10 +152251,10 @@ services {
 
 bankId="211174136"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -152427,10 +152427,10 @@ services {
 
 bankId="211174343"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -152460,10 +152460,10 @@ services {
 
 bankId="211174987"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -160925,10 +160925,10 @@ services {
 
 bankId="211970055"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -160936,10 +160936,10 @@ services {
 
 bankId="211970194"
 bankName="WEBSTER BANK"
-location="NEW BRITIAN"
+location="NEW BRITAIN"
 street="436 SLATER RD NB190"
 zipcode="06053-0000"
-city="NEW BRITIAN"
+city="NEW BRITAIN"
 region="CT"
 phone="800-3252424"
 services {
@@ -170003,7 +170003,7 @@ services {
 }
 
 bankId="226077613"
-bankName="AFFINTIY FCU"
+bankName="AFFINITY FCU"
 location="BASKING RIDGE"
 street="P O BOX 621"
 zipcode="07920-0000"
@@ -210246,7 +210246,7 @@ services {
 }
 
 bankId="271971832"
-bankName="ASSOICATED BANK GREEN BAY"
+bankName="ASSOCIATED BANK GREEN BAY"
 location="GREEN BAY"
 street="P O BOX 19097"
 zipcode="54307-9097"
@@ -268873,7 +268873,7 @@ services {
 }
 
 country="us"
-bankName="Commerical Bank %26 Trust"
+bankName="COMMERCIAL Bank %26 Trust"
 website="http%3A%2F%2Fwww.combanktrust.com%2F"
 services {
 }

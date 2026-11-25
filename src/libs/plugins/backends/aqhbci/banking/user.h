@@ -48,7 +48,7 @@ extern "C" {
 #define AH_USER_FLAGS_RESERVED1                0x00000004
 #define AH_USER_FLAGS_RESERVED2                0x00000008
 
-/** this flag is set automatically by AqHBCI upon BPD/UPD receiption. It
+/** this flag is set automatically by AqHBCI upon BPD/UPD reception. It
 * indicates that some jobs are supported even when there is no UPD job
 * description for it */
 #define AH_USER_FLAGS_IGNORE_UPD               0x00000020
@@ -163,7 +163,7 @@ void AH_User_SetSelectedTanMethod(AB_USER *u, int i);
 
 
 /**
- * Return selected TAN inpout method (see @ref AB_BANKING_TANMETHOD_TEXT and following).
+ * Return selected TAN input method (see @ref AB_BANKING_TANMETHOD_TEXT and following).
  *
  * @return selected mechanism (0 if none selected)
  */
@@ -197,7 +197,7 @@ void AH_User_SetTokenContextId(AB_USER *u, uint32_t id);
 
 
 
-/** @name Miscellanous Settings
+/** @name Miscellaneous Settings
  *
  */
 /*@{*/

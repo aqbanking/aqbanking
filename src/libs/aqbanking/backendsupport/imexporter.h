@@ -172,7 +172,7 @@ uint32_t AB_ImExporter_GetFlags(const AB_IMEXPORTER *ie);
  */
 /*@{*/
 /**
- * Transforms an UTF-8 string to a DTA string. Untranslateable characters
+ * Transforms an UTF-8 string to a DTA string. Untranslatable characters
  * are replaced by a space (chr 32).
  */
 void AB_ImExporter_Utf8ToDta(const char *p, int size, GWEN_BUFFER *buf);

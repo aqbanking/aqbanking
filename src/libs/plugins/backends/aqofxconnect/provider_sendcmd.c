@@ -524,7 +524,7 @@ void AO_Provider__AddOrModifyAccount(AB_PROVIDER *pro, AB_USER *u, AB_ACCOUNT *a
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(u));
     rv=AB_Provider_AddAccount(pro, acc, 1); /* do lock corresponding user */
     if (rv<0) {
-      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Coud not write new account (%d)", rv);
+      DBG_ERROR(AQOFXCONNECT_LOGDOMAIN, "Could not write new account (%d)", rv);
     }
     else {
       DBG_INFO(AQOFXCONNECT_LOGDOMAIN, "Reading back added account");

@@ -4,7 +4,7 @@
 
 AC_DEFUN([AQ_CHECK_OS],[
 dnl IN: 
-dnl   - AC_CANONICAL_SYSTEM muste be called before
+dnl   - AC_CANONICAL_SYSTEM must be called before
 dnl OUT:
 dnl   Variables:
 dnl     OSYSTEM: Short name of your system (subst)

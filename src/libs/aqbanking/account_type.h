@@ -9,7 +9,7 @@
  ***************************************************************************/
 
 /** @file account_type.h
- * @short Definiton of account types.
+ * @short Definition of account types.
  */
 
 #ifndef AQBANKING_ACCOUNT_TYPE_H

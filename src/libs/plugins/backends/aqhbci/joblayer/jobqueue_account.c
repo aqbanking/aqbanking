@@ -538,7 +538,7 @@ AB_ACCOUNT *_getLoadedAndUpdatedOrCreatedAccount(AB_PROVIDER *pro, AB_USER *user
     AB_Account_SetUserId(acc, AB_User_GetUniqueId(user));
     rv=AB_Provider_AddAccount(pro, acc, 0); /* do not lock corresponding user because it already is locked! */
     if (rv<0) {
-      DBG_ERROR(AQHBCI_LOGDOMAIN, "Coud not write new account (%d)", rv);
+      DBG_ERROR(AQHBCI_LOGDOMAIN, "Could not write new account (%d)", rv);
       return NULL;
     }
     else {
